@@ -1,0 +1,82 @@
+﻿@inherits LayoutComponentBase
+@using MudBlazor
+
+<MudThemeProvider />
+<MudLayout>
+
+	<!-- Top App Bar -->
+
+	<MudAppBar Elevation="1" Color="Color.Default">
+		@*Style="background-color: white; color: black;"*@
+		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+		<MudText Typo="Typo.h5" Class="ml-3">Teaghlach</MudText>
+		<MudSpacer />
+		<MudText Class="mud-pr-4">🕒 12:34 PM | 🌤️ 12°C</MudText> <!-- Placeholder -->
+		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+	</MudAppBar>
+
+	<!-- Left Nav Drawer -->
+
+	<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+		@*NavMenu*@
+		<MudNavMenu>
+
+	        <!-- Top Menu Items -->
+	        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" ActiveClass="active-link" Class="nav-link">Home</MudNavLink>
+	        <MudNavLink Href="/calendar" Icon="@Icons.Material.Filled.CalendarToday" ActiveClass="active-link" Class="nav-link">Calendar</MudNavLink>
+	        <MudNavLink Href="/chores" Icon="@Icons.Material.Filled.Checklist" ActiveClass="active-link" Class="nav-link">Chores</MudNavLink>
+	        <MudNavLink Href="/rewards" Icon="@Icons.Material.Filled.Star" ActiveClass="active-link" Class="nav-link">Rewards</MudNavLink>
+	        <MudNavLink Href="/meals" Icon="@Icons.Material.Filled.Restaurant" ActiveClass="active-link" Class="nav-link">Meals</MudNavLink>
+	        <MudNavLink Href="/photos" Icon="@Icons.Material.Filled.PhotoLibrary" ActiveClass="active-link" Class="nav-link">Photos</MudNavLink>
+	        <MudNavLink Href="/lists" Icon="@Icons.Material.Filled.List" ActiveClass="active-link" Class="nav-link">Lists</MudNavLink>
+
+	        <MudSpacer />
+
+	        <!-- Bottom Settings Option -->
+	        <MudNavLink Href="/settings" Icon="@Icons.Material.Filled.Settings" ActiveClass="active-link" Class="mud-mt-auto nav-link">Settings</MudNavLink>
+	    </MudNavMenu>
+	</MudDrawer>
+			
+	<!-- Main Content Area -->
+	<MudMainContent Class="mud-p-4" Style="background-color: #fafafa;">
+
+	</MudMainContent>
+
+</MudLayout>
+
+<style>
+	/* .nav-link { */
+	/* 	background-color: #e0e0e0; */
+	/* 	color: black; */
+	/* 	transition: background-color 0.3s ease; */
+	/* 	width: 100%; */
+	/* } */
+
+	/* 	.nav-link:hover { */
+	/* 		background-color: #c0c0c0; */
+	/* 	} */
+
+	/* .active-link { */
+	/* 	background-color: white !important; */
+	/* 	color: black; */
+	/* 	font-weight: bold; */
+	/* } */
+
+	/* .mud-appbar { */
+	/* 	z-index: 1100; /* ensures it stays on top */ */
+	/* } */
+
+	/* .mud-drawer { */
+	/* 	top: 0; */
+	/* 	height: 100vh; */
+	/* } */
+</style>
+
+@code {
+	bool _drawerOpen = true;
+
+	void DrawerToggle()
+	{
+		_drawerOpen = !_drawerOpen;
+	}
+}

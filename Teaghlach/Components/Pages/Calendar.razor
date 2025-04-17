@@ -1,22 +1,49 @@
 ﻿@page "/calendar"
+@using Teaghlach.Models
+
+<MudCalendar T="CalendarItem" Items="@events" EnableDragItems="true" EnableResizeItems="true" ShowDay="_showDay" ShowWeek="_showWeek" ShowMonth="_showMonth" ShowWorkWeek="_showWorkWeek">
+
+    <ToolbarContent>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mx-1" OnClick="AddEvent">Add Event</MudButton>
+    </ToolbarContent>
+
+</MudCalendar>
 
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mud-my-6">
-
-    <MudText Typo="Typo.h4" GutterBottom>HOME</MudText>
-    <MudText Typo="Typo.subtitle1" Class="mud-mb-4">xxxxx</MudText>
-
-    <MudGrid GutterSize="3">
-
-    </MudGrid>
-
-</MudContainer>
 
 @code {
-    [Inject] NavigationManager Navigation { get; set; }
-
-    private void NavigateTo(string url)
+    private List<CalendarItem> events = new List<CalendarItem>
     {
-        Navigation.NavigateTo(url);
+        new CalendarItem
+        {
+            Start = DateTime.Today.AddHours(10),
+            End = DateTime.Today.AddHours(11),
+            Text = "Event today",
+            AllDay = true
+        },
+        new CalendarItem
+        {
+            Start = DateTime.Today.AddDays(1).AddHours(11),
+            End = DateTime.Today.AddDays(1).AddHours(12.5),
+            Text = "Event tomorrow"
+        }
+    };
+
+    private bool _showDay = true;
+    private bool _showWeek = true;
+    private bool _showMonth = true;
+    private bool _showWorkWeek = false;
+
+    private void AddEvent()
+    {
+        events.Add(new CalendarItem
+            {
+                Start = DateTime.Now.AddHours(3),
+                End = DateTime.Now.AddHours(5),
+                Text = $"New Event {events.Count + 1}"
+            });
+
+        // Refresh UI
+        StateHasChanged();
     }
 }

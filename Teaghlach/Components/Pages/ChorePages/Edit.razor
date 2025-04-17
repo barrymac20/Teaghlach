@@ -1,0 +1,114 @@
+﻿@page "/chores/edit"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Data
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Chore</h2>
+<hr />
+@if (Chore is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Chore" OnValidSubmit="UpdateChore" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Chore.Id" value="@Chore.Id" />
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title:</label>
+                    <InputText id="title" @bind-Value="Chore.Title" class="form-control" aria-required="true"/>
+                    <ValidationMessage For="() => Chore.Title" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <InputText id="description" @bind-Value="Chore.Description" class="form-control" />
+                    <ValidationMessage For="() => Chore.Description" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="duedate" class="form-label">DueDate:</label>
+                    <InputDate id="duedate" @bind-Value="Chore.DueDate" class="form-control" aria-required="true"/>
+                    <ValidationMessage For="() => Chore.DueDate" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="iscompleted" class="form-label">IsCompleted:</label>
+                    <InputCheckbox id="iscompleted" @bind-Value="Chore.IsCompleted" class="form-check-input" />
+                    <ValidationMessage For="() => Chore.IsCompleted" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="assignedtoid" class="form-label">AssignedToId:</label>
+                    <InputNumber id="assignedtoid" @bind-Value="Chore.AssignedToId" class="form-control" />
+                    <ValidationMessage For="() => Chore.AssignedToId" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="createdat" class="form-label">CreatedAt:</label>
+                    <InputDate id="createdat" @bind-Value="Chore.CreatedAt" class="form-control" />
+                    <ValidationMessage For="() => Chore.CreatedAt" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/chores">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Chore? Chore { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Chore ??= await context.Chores.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Chore is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateChore()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Chore!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ChoreExists(Chore!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/chores");
+    }
+
+    private bool ChoreExists(int id)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Chores.Any(e => e.Id == id);
+    }
+}

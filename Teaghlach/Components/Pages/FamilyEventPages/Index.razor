@@ -1,0 +1,46 @@
+﻿@page "/familyevents"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Teaghlach.Models
+@using Teaghlach.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="familyevents/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.FamilyEvents">
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Title" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Location" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Description" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Category" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Color" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="int?" Property="familyevent => familyevent.FamilyMemberId" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="DateTime" Property="familyevent => familyevent.Start" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="DateTime?" Property="familyevent => familyevent.End" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="bool" Property="familyevent => familyevent.AllDay" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Text" />
+
+
+    <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn Context="familyevent">
+        <a href="@($"familyevents/edit?id={familyevent.Id}")">Edit</a> |
+        <a href="@($"familyevents/details?id={familyevent.Id}")">Details</a> |
+        <a href="@($"familyevents/delete?id={familyevent.Id}")">Delete</a>
+    </Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn>
+</QuickGrid>
+
+@code {
+    private TeaghlachContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

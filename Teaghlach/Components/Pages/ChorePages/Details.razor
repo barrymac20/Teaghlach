@@ -1,0 +1,56 @@
+﻿@page "/chores/details"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Data
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Chore</h2>
+    <hr />
+    @if (chore is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Title</dt>
+            <dd class="col-sm-10">@chore.Title</dd>
+            <dt class="col-sm-2">Description</dt>
+            <dd class="col-sm-10">@chore.Description</dd>
+            <dt class="col-sm-2">DueDate</dt>
+            <dd class="col-sm-10">@chore.DueDate</dd>
+            <dt class="col-sm-2">IsCompleted</dt>
+            <dd class="col-sm-10">@chore.IsCompleted</dd>
+            <dt class="col-sm-2">AssignedToId</dt>
+            <dd class="col-sm-10">@chore.AssignedToId</dd>
+            <dt class="col-sm-2">CreatedAt</dt>
+            <dd class="col-sm-10">@chore.CreatedAt</dd>
+        </dl>
+        <div>
+            <a href="@($"/chores/edit?id={chore.Id}")">Edit</a> |
+            <a href="@($"/chores")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Chore? chore;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        chore = await context.Chores.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (chore is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

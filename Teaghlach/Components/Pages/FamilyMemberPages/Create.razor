@@ -1,0 +1,64 @@
+﻿@page "/familymembers/create"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Models
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>FamilyMember</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="FamilyMember" OnValidSubmit="AddFamilyMember" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="FamilyMember.Name" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => FamilyMember.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="role" class="form-label">Role:</label> 
+                <InputText id="role" @bind-Value="FamilyMember.Role" class="form-control" /> 
+                <ValidationMessage For="() => FamilyMember.Role" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="dateofbirth" class="form-label">DateOfBirth:</label> 
+                <InputDate id="dateofbirth" @bind-Value="FamilyMember.DateOfBirth" class="form-control" /> 
+                <ValidationMessage For="() => FamilyMember.DateOfBirth" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label> 
+                <InputText id="email" @bind-Value="FamilyMember.Email" class="form-control" /> 
+                <ValidationMessage For="() => FamilyMember.Email" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="phonenumber" class="form-label">PhoneNumber:</label> 
+                <InputText id="phonenumber" @bind-Value="FamilyMember.PhoneNumber" class="form-control" /> 
+                <ValidationMessage For="() => FamilyMember.PhoneNumber" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/familymembers">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private FamilyMember FamilyMember { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddFamilyMember()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.FamilyMembers.Add(FamilyMember);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/familymembers");
+    }
+}

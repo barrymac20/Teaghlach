@@ -1,0 +1,40 @@
+﻿@page "/chores"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Teaghlach.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="chores/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Chores">
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="string" Property="chore => chore.Title" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="string" Property="chore => chore.Description" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="DateTime" Property="chore => chore.DueDate" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="bool" Property="chore => chore.IsCompleted" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="int?" Property="chore => chore.AssignedToId" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="DateTime" Property="chore => chore.CreatedAt" />
+
+    <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn Context="chore">
+        <a href="@($"chores/edit?id={chore.Id}")">Edit</a> |
+        <a href="@($"chores/details?id={chore.Id}")">Details</a> |
+        <a href="@($"chores/delete?id={chore.Id}")">Delete</a>
+    </Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn>
+</QuickGrid>
+
+@code {
+    private TeaghlachContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

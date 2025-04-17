@@ -5,8 +5,13 @@ using Teaghlach.Components;
 using Teaghlach.Components.Account;
 using Teaghlach.Data;
 using MudBlazor.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContextFactory<TeaghlachContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TeaghlachContext") ?? throw new InvalidOperationException("Connection string 'TeaghlachContext' not found.")));
+
+builder.Services.AddQuickGridEntityFrameworkAdapter();
 
 // Add services to the container.
 builder.Services.AddMudServices();
@@ -50,6 +55,7 @@ else
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    app.UseMigrationsEndPoint();
 }
 
 app.UseHttpsRedirection();

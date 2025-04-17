@@ -1,0 +1,69 @@
+﻿@page "/chores/create"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Data
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Chore</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Chore" OnValidSubmit="AddChore" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label> 
+                <InputText id="title" @bind-Value="Chore.Title" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Chore.Title" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label> 
+                <InputText id="description" @bind-Value="Chore.Description" class="form-control" /> 
+                <ValidationMessage For="() => Chore.Description" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="duedate" class="form-label">DueDate:</label> 
+                <InputDate id="duedate" @bind-Value="Chore.DueDate" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => Chore.DueDate" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="iscompleted" class="form-label">IsCompleted:</label> 
+                <InputCheckbox id="iscompleted" @bind-Value="Chore.IsCompleted" class="form-check-input" /> 
+                <ValidationMessage For="() => Chore.IsCompleted" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="assignedtoid" class="form-label">AssignedToId:</label> 
+                <InputNumber id="assignedtoid" @bind-Value="Chore.AssignedToId" class="form-control" /> 
+                <ValidationMessage For="() => Chore.AssignedToId" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="createdat" class="form-label">CreatedAt:</label> 
+                <InputDate id="createdat" @bind-Value="Chore.CreatedAt" class="form-control" /> 
+                <ValidationMessage For="() => Chore.CreatedAt" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/chores">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Chore Chore { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddChore()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Chores.Add(Chore);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/chores");
+    }
+}

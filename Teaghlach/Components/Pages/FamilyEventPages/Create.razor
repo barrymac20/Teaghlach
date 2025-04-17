@@ -1,0 +1,89 @@
+﻿@page "/familyevents/create"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Models
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>FamilyEvent</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="FamilyEvent" OnValidSubmit="AddFamilyEvent" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="title" class="form-label">Title:</label> 
+                <InputText id="title" @bind-Value="FamilyEvent.Title" class="form-control" aria-required="true"/> 
+                <ValidationMessage For="() => FamilyEvent.Title" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="location" class="form-label">Location:</label> 
+                <InputText id="location" @bind-Value="FamilyEvent.Location" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.Location" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label> 
+                <InputText id="description" @bind-Value="FamilyEvent.Description" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.Description" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="category" class="form-label">Category:</label> 
+                <InputText id="category" @bind-Value="FamilyEvent.Category" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.Category" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="color" class="form-label">Color:</label> 
+                <InputText id="color" @bind-Value="FamilyEvent.Color" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.Color" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="familymemberid" class="form-label">FamilyMemberId:</label> 
+                <InputNumber id="familymemberid" @bind-Value="FamilyEvent.FamilyMemberId" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.FamilyMemberId" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="start" class="form-label">Start:</label> 
+                <InputDate id="start" @bind-Value="FamilyEvent.Start" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.Start" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="end" class="form-label">End:</label> 
+                <InputDate id="end" @bind-Value="FamilyEvent.End" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.End" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="allday" class="form-label">AllDay:</label> 
+                <InputCheckbox id="allday" @bind-Value="FamilyEvent.AllDay" class="form-check-input" /> 
+                <ValidationMessage For="() => FamilyEvent.AllDay" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="text" class="form-label">Text:</label> 
+                <InputText id="text" @bind-Value="FamilyEvent.Text" class="form-control" /> 
+                <ValidationMessage For="() => FamilyEvent.Text" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/familyevents">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private FamilyEvent FamilyEvent { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddFamilyEvent()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.FamilyEvents.Add(FamilyEvent);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/familyevents");
+    }
+}

@@ -1,9 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using MudBlazor
 
+<MudPopoverProvider />
 <MudThemeProvider />
 <MudLayout>
-
+	
 	<!-- Top App Bar -->
 
 	<MudAppBar Elevation="1" Color="Color.Default">
@@ -11,7 +12,7 @@
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 		<MudText Typo="Typo.h5" Class="ml-3">Teaghlach</MudText>
 		<MudSpacer />
-		<MudText Class="mud-pr-4">🕒 12:34 PM | 🌤️ 12°C</MudText> <!-- Placeholder -->
+		<MudText Class="pr-4">🕒 12:34 PM | 🌤️ 12°C</MudText> <!-- Placeholder -->
 		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
 	</MudAppBar>
 
@@ -22,13 +23,15 @@
 		<MudNavMenu>
 
 	        <!-- Top Menu Items -->
-	        <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" ActiveClass="active-link" Class="nav-link">Home</MudNavLink>
-	        <MudNavLink Href="/calendar" Icon="@Icons.Material.Filled.CalendarToday" ActiveClass="active-link" Class="nav-link">Calendar</MudNavLink>
+			<MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard" ActiveClass="active-link" Class="nav-link">Dashboard</MudNavLink>
+	        <MudNavLink Href="/calendar" Icon="@Icons.Material.Filled.CalendarMonth" ActiveClass="active-link" Class="nav-link">Calendar</MudNavLink>
 	        <MudNavLink Href="/chores" Icon="@Icons.Material.Filled.Checklist" ActiveClass="active-link" Class="nav-link">Chores</MudNavLink>
 	        <MudNavLink Href="/rewards" Icon="@Icons.Material.Filled.Star" ActiveClass="active-link" Class="nav-link">Rewards</MudNavLink>
 	        <MudNavLink Href="/meals" Icon="@Icons.Material.Filled.Restaurant" ActiveClass="active-link" Class="nav-link">Meals</MudNavLink>
 	        <MudNavLink Href="/photos" Icon="@Icons.Material.Filled.PhotoLibrary" ActiveClass="active-link" Class="nav-link">Photos</MudNavLink>
 	        <MudNavLink Href="/lists" Icon="@Icons.Material.Filled.List" ActiveClass="active-link" Class="nav-link">Lists</MudNavLink>
+	        <MudNavLink Href="/games" Icon="@Icons.Material.Filled.Games" ActiveClass="active-link" Class="nav-link">Games</MudNavLink>
+	        <MudNavLink Href="/familymembers" Icon="@Icons.Material.Filled.FamilyRestroom" ActiveClass="active-link" Class="nav-link">Your Family</MudNavLink> @*or groups2*@
 
 	        <MudSpacer />
 
@@ -38,8 +41,8 @@
 	</MudDrawer>
 			
 	<!-- Main Content Area -->
-	<MudMainContent Class="mud-p-4" Style="background-color: #fafafa;">
-
+	<MudMainContent Class="pt-16" Style="background-color: #fafafa;">
+		@Body
 	</MudMainContent>
 
 </MudLayout>

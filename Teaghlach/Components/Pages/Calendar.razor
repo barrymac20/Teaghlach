@@ -1,49 +1,59 @@
 ﻿@page "/calendar"
-@using Teaghlach.Models
+@inject IDbContextFactory<TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
 
-<MudCalendar T="CalendarItem" Items="@events" EnableDragItems="true" EnableResizeItems="true" ShowDay="_showDay" ShowWeek="_showWeek" ShowMonth="_showMonth" ShowWorkWeek="_showWorkWeek">
+@using Heron.MudCalendar
 
-    <ToolbarContent>
-        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mx-1" OnClick="AddEvent">Add Event</MudButton>
-    </ToolbarContent>
+
+<MudCalendar T="CalendarItem"
+			 Items="@events"
+			 EnableDragItems="true"
+			 EnableResizeItems="true"
+			 View="CalendarView.Week"
+
+			 ShowDay="@_showDay"
+			 ShowWeek="@_showWeek"
+			 ShowMonth="@_showMonth"
+			 ShowWorkWeek="@_showWorkWeek"
+			 
+			 ShowCurrentTime="true"
+			 DayStartTime="new TimeOnly(9, 0)"
+			 DayCellHeight="18"
+			 ItemClicked="@((item) => OnEventClick(item))">
+
+	<ToolbarContent>
+		<MudButton Variant="Variant.Filled"
+				   Color="Color.Secondary"
+				   Class="mx-1"
+				   Href="/familyevents/create">
+			Add Event
+		</MudButton>
+	</ToolbarContent>
 
 </MudCalendar>
 
-
-
 @code {
-    private List<CalendarItem> events = new List<CalendarItem>
-    {
-        new CalendarItem
-        {
-            Start = DateTime.Today.AddHours(10),
-            End = DateTime.Today.AddHours(11),
-            Text = "Event today",
-            AllDay = true
-        },
-        new CalendarItem
-        {
-            Start = DateTime.Today.AddDays(1).AddHours(11),
-            End = DateTime.Today.AddDays(1).AddHours(12.5),
-            Text = "Event tomorrow"
-        }
-    };
+	private TeaghlachContext _context = default!;
+	private List<FamilyEvent> events = new();
 
-    private bool _showDay = true;
-    private bool _showWeek = true;
-    private bool _showMonth = true;
-    private bool _showWorkWeek = false;
+	private bool _showDay = true;
+	private bool _showWeek = true;
+	private bool _showMonth = true;
+	private bool _showWorkWeek = false;
 
-    private void AddEvent()
-    {
-        events.Add(new CalendarItem
-            {
-                Start = DateTime.Now.AddHours(3),
-                End = DateTime.Now.AddHours(5),
-                Text = $"New Event {events.Count + 1}"
-            });
+	protected override async Task OnInitializedAsync()
+	{
+		_context = DbFactory.CreateDbContext();
+		events = await _context.FamilyEvents.ToListAsync();
+	}
 
-        // Refresh UI
-        StateHasChanged();
-    }
+	// Map CalendarItem to FamilyEvent and navigate to details
+	private void OnEventClick(CalendarItem item)
+	{
+		var familyEvent = item as FamilyEvent;  // Cast CalendarItem to FamilyEvent
+		if (familyEvent != null)
+		{
+			NavigationManager.NavigateTo($"/familyevents/details?id={familyEvent.Id}");
+		}
+	}
 }

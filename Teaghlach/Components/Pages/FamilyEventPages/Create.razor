@@ -32,14 +32,40 @@
 			</div>
 			<div class="mb-3">
 				<label for="category" class="form-label">Category:</label>
-				<InputText id="category" @bind-Value="FamilyEvent.Category" class="form-control" />
-				<ValidationMessage For="() => FamilyEvent.Category" class="text-danger" />
+				<InputSelect id="category"
+							 class="form-select"
+							 Value="FamilyEvent.EventCategoryId"
+							 ValueChanged="@(
+                 EventCallback.Factory.Create<int?>(this, HandleCategoryChanged)
+             )"
+							 ValueExpression="() => FamilyEvent.EventCategoryId">
+					<option value="">-- Select Category --</option>
+					@foreach (var cat in EventCategories)
+					{
+						<option value="@cat.Id">@cat.Name</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="() => FamilyEvent.EventCategoryId" class="text-danger" />
+			</div>
+
+			<div class="mb-3">
+				<label for="subcategory" class="form-label">Subcategory:</label>
+				<InputSelect id="subcategory" class="form-select" @bind-Value="FamilyEvent.EventSubCategoryId">
+					<option value="">-- Select Subcategory --</option>
+					@foreach (var sub in FilteredSubCategories)
+					{
+						<option value="@sub.Id">@sub.Name</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="() => FamilyEvent.EventSubCategoryId" class="text-danger" />
 			</div>
 			<div class="mb-3">
 				<label for="color" class="form-label">Color:</label>
-				<InputText id="color" @bind-Value="FamilyEvent.Color" class="form-control" />
+				<input type="color" id="color" class="form-control form-control-color"
+					   @bind="FamilyEvent.Color" disabled/>
 				<ValidationMessage For="() => FamilyEvent.Color" class="text-danger" />
 			</div>
+
 			<div class="mb-3">
 				<label for="familymemberid" class="form-label">Family Member:</label>
 				<InputSelect id="familymemberid" @bind-Value="FamilyEvent.FamilyMemberId" class="form-select">
@@ -90,6 +116,10 @@
 </div>
 
 @code {
+	// ------------------------------
+	// Model & Form Initialization
+	// ------------------------------
+
 	[SupplyParameterFromForm]
 	private FamilyEvent FamilyEvent { get; set; } = new()
 		{
@@ -97,25 +127,132 @@
 			End = DateTime.Today
 		};
 
-	private List<FamilyMember> FamilyMembers = new();
 	private TimeOnly? startTime = null;
 	private TimeOnly? endTime = null;
 
+	// ------------------------------
+	// Data Sources
+	// ------------------------------
 
-	// To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-	private async Task AddFamilyEvent()
+	private List<FamilyMember> FamilyMembers = new();
+
+	private List<string> Categories = new()
 	{
-		using var context = DbFactory.CreateDbContext();
-		FamilyEvent.Start = FamilyEvent.Start.Date + startTime.Value.ToTimeSpan();
-		FamilyEvent.End = FamilyEvent.End?.Date + endTime.Value.ToTimeSpan();
-		context.FamilyEvents.Add(FamilyEvent);
-		await context.SaveChangesAsync();
-		NavigationManager.NavigateTo("/familyevents"); ///calendar
-	}
+		"Birthday",
+		"Sports",
+		"School",
+		"Appointment",
+		"Chore",
+		"Holiday",
+		"Other"
+	};
+
+	private List<EventCategory> EventCategories = new();
+	private List<EventSubCategory> AllSubCategories = new();
+	private List<EventSubCategory> FilteredSubCategories = new();
+
+	private readonly Dictionary<int, string> CategoryColors = new()
+{
+    // Match these IDs with the actual IDs in your EventCategory table
+    { 1, "#FFB6C1" }, // Birthday
+    { 2, "#ADD8E6" }, // Sports
+    { 3, "#90EE90" }, // School
+    { 4, "#FFD700" }, // Appointment
+    { 5, "#FFA07A" }, // Chore
+    { 6, "#20B2AA" }, // Holiday
+    { 7, "#D3D3D3" }, // Other
+};
+
+
+	// ------------------------------
+	// Lifecycle
+	// ------------------------------
 
 	protected override async Task OnInitializedAsync()
 	{
 		using var context = await DbFactory.CreateDbContextAsync();
 		FamilyMembers = await context.FamilyMembers.ToListAsync();
+		EventCategories = await context.EventCategories.ToListAsync();
+		AllSubCategories = await context.EventSubCategories.ToListAsync();
 	}
+
+	// ------------------------------
+	// Event Handlers
+	// ------------------------------
+
+	private void HandleCategoryChanged(int? selectedCategoryId)
+	{
+		FamilyEvent.EventCategoryId = selectedCategoryId;
+
+		if (selectedCategoryId.HasValue)
+		{
+			// Set the default color for the selected category
+			if (CategoryColors.TryGetValue(selectedCategoryId.Value, out var color))
+			{
+				FamilyEvent.Color = color;
+			}
+
+			FilteredSubCategories = AllSubCategories
+				.Where(sc => sc.EventCategoryId == selectedCategoryId)
+				.ToList();
+		}
+		else
+		{
+			FilteredSubCategories.Clear();
+		}
+
+		FamilyEvent.EventSubCategoryId = null;
+	}
+
+
+
+
+	// ------------------------------
+	// Submit Form
+	// ------------------------------
+
+	// private async Task AddFamilyEvent()
+	// {
+	// 	using var context = DbFactory.CreateDbContext();
+
+	// 	FamilyEvent.Start = FamilyEvent.Start.Date + startTime.Value.ToTimeSpan();
+	// 	FamilyEvent.End = FamilyEvent.End?.Date + endTime.Value.ToTimeSpan();
+
+	// 	context.FamilyEvents.Add(FamilyEvent);
+	// 	await context.SaveChangesAsync();
+
+	// 	NavigationManager.NavigateTo("/familyevents"); Or "/calendar"
+	// }
+
+	private async Task AddFamilyEvent()
+	{
+		using var context = DbFactory.CreateDbContext();
+
+		// Combine date and time for start
+		FamilyEvent.Start = FamilyEvent.Start.Date + startTime.Value.ToTimeSpan();
+
+		// Combine date and time for end
+		if (FamilyEvent.End.HasValue)
+		{
+			FamilyEvent.End = FamilyEvent.End.Value.Date + endTime.Value.ToTimeSpan();
+		}
+		else
+		{
+			// If End is null, default to 1 hour after Start
+			FamilyEvent.End = FamilyEvent.Start.AddHours(1);
+		}
+
+		// If End is before or equal to Start, fix it
+		if (FamilyEvent.End <= FamilyEvent.Start)
+		{
+			FamilyEvent.End = FamilyEvent.Start.AddHours(1);
+		}
+
+		context.FamilyEvents.Add(FamilyEvent);
+		await context.SaveChangesAsync();
+
+		NavigationManager.NavigateTo("/familyevents"); // Or "/calendar"
+	}
+
 }
+

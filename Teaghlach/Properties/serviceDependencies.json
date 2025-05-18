@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:TeaghlachContext"
+    "secrets1": {
+      "type": "secrets",
+      "dynamicId": null
     }
   }
 }

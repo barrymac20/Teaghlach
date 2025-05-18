@@ -2,10 +2,7 @@
 @inject IDbContextFactory<TeaghlachContext> DbFactory
 @inject NavigationManager NavigationManager
 
-@using Heron.MudCalendar
-
-
-<MudCalendar T="CalendarItem"
+<MudCalendar T="FamilyEvent"
 			 Items="@events"
 			 EnableDragItems="true"
 			 EnableResizeItems="true"
@@ -29,6 +26,34 @@
 			Add Event
 		</MudButton>
 	</ToolbarContent>
+
+	<WeekTemplate Context="item">
+		@{
+			var fe = item as FamilyEvent;
+		}
+		<div style="background-color:@fe?.Color; padding:6px; color:white; border-radius:4px; text-align:center;">
+			@fe?.Text
+		</div>
+	</WeekTemplate>
+
+	<DayTemplate Context="item">
+		@{
+			var fe = item as FamilyEvent;
+		}
+		<div style="background-color:@fe?.Color; padding:6px; color:white; border-radius:4px; text-align:center;">
+			@fe?.Text
+		</div>
+	</DayTemplate>
+
+	<MonthTemplate Context="item">
+		@{
+			var fe = item as FamilyEvent;
+		}
+		<div style="background-color:@fe?.Color; padding:4px; color:white; border-radius:4px; font-size:12px;">
+			@fe?.Text
+		</div>
+	</MonthTemplate>
+
 
 </MudCalendar>
 

@@ -24,12 +24,19 @@ namespace Teaghlach.Models
         public string? Category { get; set; } // e.g. Birthday, Match, School, etc.
 
 
-        public string? Color { get; set; } = "#2196f3"; // Default blue color
+        public string? Color { get; set; } = "#fff"; // Default blue color
 
-        // Optional: Link to family member (e.g., whose event it is)
         public int? FamilyMemberId { get; set; }
 
         [ForeignKey("FamilyMemberId")]
         public FamilyMember? FamilyMember { get; set; }
+
+        public int? EventCategoryId { get; set; }
+        public EventCategory? EventCategory { get; set; }
+
+        public int? EventSubCategoryId { get; set; }
+        public EventSubCategory? EventSubCategory { get; set; }
+
+
     }
 }

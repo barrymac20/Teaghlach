@@ -1,13 +1,13 @@
 {
   "dependencies": {
-    "mssql2": {
-      "type": "mssql.local",
-      "connectionId": "ConnectionStrings:TeaghlachContext"
-    },
     "mssql1": {
       "ignored": "true",
       "type": "mssql",
       "connectionId": "ConnectionStrings:DefaultConnection"
+    },
+    "secrets1": {
+      "type": "secrets.user",
+      "dynamicId": null
     }
   }
 }

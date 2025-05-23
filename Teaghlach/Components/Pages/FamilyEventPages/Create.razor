@@ -78,7 +78,6 @@
 				<label for="start" class="form-label">Start:</label>
 				<div class="d-flex">
 					<InputDate id="start" @bind-Value="FamilyEvent.Start" class="form-control" />
-					<!-- Use @bind for time directly -->
 					<input type="time" id="startTime" @bind="startTime" class="form-control ms-2" />
 				</div>
 				<ValidationMessage For="() => FamilyEvent.Start" class="text-danger" />
@@ -88,7 +87,6 @@
 				<label for="end" class="form-label">End:</label>
 				<div class="d-flex">
 					<InputDate id="end" @bind-Value="FamilyEvent.End" class="form-control" />
-					<!-- Use @bind for time directly -->
 					<input type="time" id="endTime" @bind="endTime" class="form-control ms-2" />
 				</div>
 				<ValidationMessage For="() => FamilyEvent.End" class="text-danger" />

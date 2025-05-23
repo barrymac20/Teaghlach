@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MudBlazor;
 using Teaghlach.Models;
 
 namespace Teaghlach.Data
@@ -13,6 +14,7 @@ namespace Teaghlach.Data
         [Required]
         [MaxLength(100)]
         public string Title { get; set; } = string.Empty;
+        public ChoreType Type { get; set; }
 
         [MaxLength(500)]
         public string? Description { get; set; }
@@ -28,6 +30,7 @@ namespace Teaghlach.Data
         [ForeignKey("AssignedToId")]
         public FamilyMember? AssignedTo { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } //= DateTime.UtcNow;
+
     }
 }

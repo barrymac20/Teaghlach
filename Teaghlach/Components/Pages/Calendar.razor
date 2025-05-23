@@ -95,13 +95,11 @@
 
 		foreach (var e in events)
 		{
-			// Ensure Text is set (used in templates)
-			// if (string.IsNullOrWhiteSpace(e.Text))
-			// 	e.Text = e.Title;
+
 
 			if (e.End == null || e.End.Value == e.Start)
 			{
-				e.End = e.Start.AddHours(2); // or however long you want as a default
+				e.End = e.Start.AddHours(2); 
 			}
 		}
 	}
@@ -109,10 +107,9 @@
 
 
 
-	// Map CalendarItem to FamilyEvent and navigate to details
 	private void OnEventClick(CalendarItem item)
 	{
-		var familyEvent = item as FamilyEvent;  // Cast CalendarItem to FamilyEvent
+		var familyEvent = item as FamilyEvent; 
 		if (familyEvent != null)
 		{
 			NavigationManager.NavigateTo($"/familyevents/details?id={familyEvent.Id}");

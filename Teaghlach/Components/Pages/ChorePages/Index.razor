@@ -2,8 +2,11 @@
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Teaghlach.Data
+
 @implements IAsyncDisposable
 @inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@using QuickGridSortDirection = Microsoft.AspNetCore.Components.QuickGrid.SortDirection
+
 
 <PageTitle>Chores</PageTitle>
 
@@ -14,12 +17,21 @@
 </p>
 
 <QuickGrid Class="table" Items="context.Chores">
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="string" Property="chore => chore.Title" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="string" Property="chore => chore.Description" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="DateTime" Property="chore => chore.DueDate" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="bool" Property="chore => chore.IsCompleted" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="int?" Property="chore => chore.AssignedToId" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="DateTime" Property="chore => chore.CreatedAt" />
+
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="string" Property="chore => chore.Type.GetDescription()" Title="Chore" Sortable="true" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="Chore" TProp="string" Property="chore => chore.AssignedTo.Name" Title="Assigned To" Sortable="true" />
+
+    <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn TGridItem="Chore" Title="Created Date" Context="chore">
+        @chore.CreatedAt.ToString("dd/MM/yyyy")
+    </Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn>
+
+    <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn TGridItem="Chore" Title="Due Date" Context="chore">
+        @chore.DueDate.ToString("dd/MM/yyyy")
+    </Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn>
+
+    <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn TGridItem="Chore" Title="Completed" Context="chore">
+        @(chore.IsCompleted ? "Yes" : "No")
+    </Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn>
 
     <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn Context="chore">
         <a href="@($"chores/edit?id={chore.Id}")">Edit</a> |
@@ -30,11 +42,19 @@
 
 @code {
     private TeaghlachContext context = default!;
+    private string? choreTypeFilter;
+    private string? assignedToFilter;
+    private QuickGrid<Chore>? grid;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
+
+        context.Chores
+        .Include(f => f.AssignedTo)
+        .Load();
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    public async ValueTask DisposeAsync() => await context.DisposeAsync(); 
+
 }

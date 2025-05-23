@@ -12,44 +12,47 @@
 <div>
     <h2>Chore</h2>
     <hr />
-    @if (chore is null)
+    @if (Chore is null)
     {
         <p><em>Loading...</em></p>
     }
     else {
-        <dl class="row">
-            <dt class="col-sm-2">Title</dt>
-            <dd class="col-sm-10">@chore.Title</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@chore.Description</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">DueDate</dt>
-            <dd class="col-sm-10">@chore.DueDate</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">IsCompleted</dt>
-            <dd class="col-sm-10">@chore.IsCompleted</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">AssignedToId</dt>
-            <dd class="col-sm-10">@chore.AssignedToId</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">CreatedAt</dt>
-            <dd class="col-sm-10">@chore.CreatedAt</dd>
-        </dl>
-        <EditForm method="post" Model="chore" OnValidSubmit="DeleteChore" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(chore is null)">Delete</button> |
+        <table class="table table-bordered w-auto">
+            <tbody>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Chore</strong></td>
+                    <td class="text-start ps-4">@Chore.Type.GetDescription()</td>
+                </tr>
+
+                <tr>
+                    <td class="fw-bold text-start"><strong>Assigned To</strong></td>
+                    <td class="text-start ps-4">@Chore.AssignedTo?.Name</td>
+                </tr>
+                
+                <tr>
+                    <td class="fw-bold text-start"><strong>Created</strong></td>
+                    <td class="text-start ps-4">@Chore.CreatedAt.ToShortDateString()</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Due Date</strong></td>
+                    <td class="text-start ps-4">@Chore.DueDate.ToShortDateString()</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Completed</strong></td>
+                    <td class="text-start ps-4">@(Chore.IsCompleted ? "Yes" : "No")</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <EditForm method="post" Model="Chore" OnValidSubmit="DeleteChore" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(Chore is null)">Delete</button> |
             <a href="/chores">Back to List</a>
         </EditForm>
     }
 </div>
 
 @code {
-    private Chore? chore;
+    private Chore? Chore;
 
     [SupplyParameterFromQuery]
     private int Id { get; set; }
@@ -57,9 +60,11 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        chore = await context.Chores.FirstOrDefaultAsync(m => m.Id == Id);
+        Chore = await context.Chores
+            .Include(c => c.AssignedTo)
+            .FirstOrDefaultAsync(c => c.Id == Id);
 
-        if (chore is null)
+        if (Chore is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
@@ -68,7 +73,7 @@
     private async Task DeleteChore()
     {
         using var context = DbFactory.CreateDbContext();
-        context.Chores.Remove(chore!);
+        context.Chores.Remove(Chore!);
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/chores");
     }

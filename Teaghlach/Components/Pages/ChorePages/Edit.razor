@@ -12,103 +12,113 @@
 <hr />
 @if (Chore is null)
 {
-    <p><em>Loading...</em></p>
+	<p><em>Loading...</em></p>
 }
 else
 {
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Chore" OnValidSubmit="UpdateChore" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="Chore.Id" value="@Chore.Id" />
-                <div class="mb-3">
-                    <label for="title" class="form-label">Title:</label>
-                    <InputText id="title" @bind-Value="Chore.Title" class="form-control" aria-required="true"/>
-                    <ValidationMessage For="() => Chore.Title" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <InputText id="description" @bind-Value="Chore.Description" class="form-control" />
-                    <ValidationMessage For="() => Chore.Description" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="duedate" class="form-label">DueDate:</label>
-                    <InputDate id="duedate" @bind-Value="Chore.DueDate" class="form-control" aria-required="true"/>
-                    <ValidationMessage For="() => Chore.DueDate" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="iscompleted" class="form-label">IsCompleted:</label>
-                    <InputCheckbox id="iscompleted" @bind-Value="Chore.IsCompleted" class="form-check-input" />
-                    <ValidationMessage For="() => Chore.IsCompleted" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="assignedtoid" class="form-label">AssignedToId:</label>
-                    <InputNumber id="assignedtoid" @bind-Value="Chore.AssignedToId" class="form-control" />
-                    <ValidationMessage For="() => Chore.AssignedToId" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="createdat" class="form-label">CreatedAt:</label>
-                    <InputDate id="createdat" @bind-Value="Chore.CreatedAt" class="form-control" />
-                    <ValidationMessage For="() => Chore.CreatedAt" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
-        </div>
-    </div>
+	<div class="row">
+		<div class="col-md-4">
+			<EditForm method="post" Model="Chore" OnValidSubmit="UpdateChore" FormName="edit" Enhance>
+				<DataAnnotationsValidator />
+				<ValidationSummary role="alert" />
+				<div class="mb-3">
+					<label for="choreType" class="form-label">Chore Type:</label>
+					<InputSelect id="choreType" class="form-select" @bind-Value="Chore.Type">
+						@foreach (var type in Enum.GetValues<ChoreType>())
+						{
+							<option value="@type">@type.GetDescription()</option>
+						}
+					</InputSelect>
+					<ValidationMessage For="() => Chore.Type" class="text-danger" />
+				</div>
+				<input type="hidden" name="Chore.Id" value="@Chore.Id" />
+				<div class="mb-3">
+					<label for="assignedToId" class="form-label">Family Member:</label>
+					<InputSelect id="assignedToId" @bind-Value="Chore.AssignedToId" class="form-select">
+						<option value="">-- Select Family Member --</option>
+						@foreach (var member in FamilyMembers)
+						{
+							<option value="@member.Id">@member.Name</option>
+						}
+					</InputSelect>
+					<ValidationMessage For="() => Chore.AssignedToId" class="text-danger" />
+				</div>
+
+				<div class="mb-3">
+					<label for="createdat" class="form-label">Created Date:</label>
+					<InputDate id="createdat" @bind-Value="Chore.CreatedAt" class="form-control" />
+					<ValidationMessage For="() => Chore.CreatedAt" class="text-danger" />
+				</div>
+				<div class="mb-3">
+					<label for="duedate" class="form-label">Due Date:</label>
+					<InputDate id="duedate" @bind-Value="Chore.DueDate" class="form-control" aria-required="true" />
+					<ValidationMessage For="() => Chore.DueDate" class="text-danger" />
+				</div>
+				<div class="mb-3">
+					<label for="iscompleted" class="form-label">Completed:</label>
+					<InputCheckbox id="iscompleted" @bind-Value="Chore.IsCompleted" class="form-check-input" />
+					<ValidationMessage For="() => Chore.IsCompleted" class="text-danger" />
+				</div>
+				<button type="submit" class="btn btn-primary">Save</button>
+			</EditForm>
+		</div>
+	</div>
 }
 
 <div>
-    <a href="/chores">Back to List</a>
+	<a href="/chores">Back to List</a>
 </div>
 
 @code {
-    [SupplyParameterFromQuery]
-    private int Id { get; set; }
+	[SupplyParameterFromQuery]
+	private int Id { get; set; }
 
-    [SupplyParameterFromForm]
-    private Chore? Chore { get; set; }
+	[SupplyParameterFromForm]
+	private Chore? Chore { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        using var context = DbFactory.CreateDbContext();
-        Chore ??= await context.Chores.FirstOrDefaultAsync(m => m.Id == Id);
+	private List<FamilyMember> FamilyMembers = new();
 
-        if (Chore is null)
-        {
-            NavigationManager.NavigateTo("notfound");
-        }
-    }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task UpdateChore()
-    {
-        using var context = DbFactory.CreateDbContext();
-        context.Attach(Chore!).State = EntityState.Modified;
+	protected override async Task OnInitializedAsync()
+	{
+		using var context = DbFactory.CreateDbContext();
+		FamilyMembers = await context.FamilyMembers.ToListAsync();
 
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!ChoreExists(Chore!.Id))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
-        }
+		Chore ??= await context.Chores.FirstOrDefaultAsync(m => m.Id == Id);
 
-        NavigationManager.NavigateTo("/chores");
-    }
+		if (Chore is null)
+		{
+			NavigationManager.NavigateTo("notfound");
+		}
+	}
 
-    private bool ChoreExists(int id)
-    {
-        using var context = DbFactory.CreateDbContext();
-        return context.Chores.Any(e => e.Id == id);
-    }
+	private async Task UpdateChore()
+	{
+		using var context = DbFactory.CreateDbContext();
+		context.Attach(Chore!).State = EntityState.Modified;
+
+		try
+		{
+			await context.SaveChangesAsync();
+		}
+		catch (DbUpdateConcurrencyException)
+		{
+			if (!ChoreExists(Chore!.Id))
+			{
+				NavigationManager.NavigateTo("notfound");
+			}
+			else
+			{
+				throw;
+			}
+		}
+
+		NavigationManager.NavigateTo("/chores");
+	}
+
+	private bool ChoreExists(int id)
+	{
+		using var context = DbFactory.CreateDbContext();
+		return context.Chores.Any(e => e.Id == id);
+	}
 }

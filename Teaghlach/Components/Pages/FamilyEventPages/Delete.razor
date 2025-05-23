@@ -74,8 +74,8 @@
 
         FamilyEvent ??= await context.FamilyEvents
             .Include(e => e.EventCategory)
-            .Include(e => e.EventSubCategory) // Optional: include this if you use it
-            .Include(e => e.FamilyMember)     // Optional: include this if you use it
+            .Include(e => e.EventSubCategory)
+            .Include(e => e.FamilyMember)    
             .FirstOrDefaultAsync(m => m.Id == Id);
 
         if (FamilyEvent is null)

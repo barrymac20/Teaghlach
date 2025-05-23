@@ -23,10 +23,15 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+    //.AddInteractiveServerComponents(options => { options.DetailedErrors = true; });
 
 //  Optional: If you're still using AuthenticationStateProvider
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<AuthenticationStateProvider, ServerAuthenticationStateProvider>();
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7083/") });
+
+
 
 var app = builder.Build();
 

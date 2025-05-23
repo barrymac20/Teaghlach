@@ -1,6 +1,4 @@
-﻿@* @using Teaghlach.Models *@
-@* @using MudBlazor *@
-@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+﻿@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
 @inject NavigationManager NavigationManager
 
 
@@ -21,12 +19,10 @@
 				<MudListItem><b>Description:</b> @Event.Description</MudListItem>
 				<MudListItem><b>Category:</b> @Event.EventCategory?.Name</MudListItem>
 				<MudListItem><b>Sub-Category:</b> @Event.EventSubCategory?.Name</MudListItem>
-				@* <MudListItem><b>Color:</b> @Event.Color</MudListItem> *@
 				<MudListItem><b>Family Member:</b> @Event.FamilyMember?.Name</MudListItem>
 				<MudListItem><b>Start:</b> @Event.Start</MudListItem>
 				<MudListItem><b>End:</b> @Event.End</MudListItem>
 				<MudListItem><b>All Day Event:</b> @(Event.AllDay ? "Yes" : "No")</MudListItem>
-				
 			</MudList>
 
 			<MudDivider Class="my-4" />

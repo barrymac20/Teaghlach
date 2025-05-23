@@ -24,6 +24,7 @@ namespace Teaghlach.Data
         public DbSet<Reward> Rewards { get; set; }
         public DbSet<Meal> Meals { get; set; }
         public DbSet<List> Lists { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -63,7 +64,6 @@ namespace Teaghlach.Data
         public DbSet<Teaghlach.Models.Reward> Reward { get; set; } = default!;
         public DbSet<Teaghlach.Models.Meal> Meal { get; set; } = default!;
         public DbSet<Teaghlach.Models.List> List { get; set; } = default!;
-
 
     }
 

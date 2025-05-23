@@ -16,35 +16,41 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert"/>
             <div class="mb-3">
-                <label for="title" class="form-label">Title:</label> 
-                <InputText id="title" @bind-Value="Chore.Title" class="form-control" aria-required="true"/> 
-                <ValidationMessage For="() => Chore.Title" class="text-danger" /> 
-            </div>        
+                <label for="choreType" class="form-label">Chore Type:</label>
+                <InputSelect id="choreType" class="form-select" @bind-Value="Chore.Type">
+                    @foreach (var type in Enum.GetValues<ChoreType>())
+                    {
+                        <option value="@type">@type.GetDescription()</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Chore.Type" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="description" class="form-label">Description:</label> 
-                <InputText id="description" @bind-Value="Chore.Description" class="form-control" /> 
-                <ValidationMessage For="() => Chore.Description" class="text-danger" /> 
-            </div>        
+                <label for="assignedToId" class="form-label">Family Member:</label>
+                <InputSelect id="assignedToId" @bind-Value="Chore.AssignedToId" class="form-select">
+                    <option value="">-- Select Family Member --</option>
+                    @foreach (var member in FamilyMembers)
+                    {
+                        <option value="@member.Id">@member.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => Chore.AssignedToId" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="duedate" class="form-label">DueDate:</label> 
-                <InputDate id="duedate" @bind-Value="Chore.DueDate" class="form-control" aria-required="true"/> 
-                <ValidationMessage For="() => Chore.DueDate" class="text-danger" /> 
-            </div>        
+                <label for="createdat" class="form-label">Created Date:</label>
+                <InputDate id="createdat" @bind-Value="Chore.CreatedAt" class="form-control" />
+                <ValidationMessage For="() => Chore.CreatedAt" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="iscompleted" class="form-label">IsCompleted:</label> 
-                <InputCheckbox id="iscompleted" @bind-Value="Chore.IsCompleted" class="form-check-input" /> 
-                <ValidationMessage For="() => Chore.IsCompleted" class="text-danger" /> 
-            </div>        
+                <label for="duedate" class="form-label">Due Date:</label>
+                <InputDate id="duedate" @bind-Value="Chore.DueDate" class="form-control" aria-required="true" />
+                <ValidationMessage For="() => Chore.DueDate" class="text-danger" />
+            </div>
             <div class="mb-3">
-                <label for="assignedtoid" class="form-label">AssignedToId:</label> 
-                <InputNumber id="assignedtoid" @bind-Value="Chore.AssignedToId" class="form-control" /> 
-                <ValidationMessage For="() => Chore.AssignedToId" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="createdat" class="form-label">CreatedAt:</label> 
-                <InputDate id="createdat" @bind-Value="Chore.CreatedAt" class="form-control" /> 
-                <ValidationMessage For="() => Chore.CreatedAt" class="text-danger" /> 
-            </div>        
+                <label for="iscompleted" class="form-label">Completed:</label>
+                <InputCheckbox id="iscompleted" @bind-Value="Chore.IsCompleted" class="form-check-input" disabled />
+                <ValidationMessage For="() => Chore.IsCompleted" class="text-danger" />
+            </div>
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
     </div>
@@ -57,8 +63,21 @@
 @code {
     [SupplyParameterFromForm]
     private Chore Chore { get; set; } = new();
+    private List<FamilyMember> FamilyMembers = new();
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = await DbFactory.CreateDbContextAsync();
+        FamilyMembers = await context.FamilyMembers.ToListAsync();
+
+        if (Chore.DueDate == default)
+            Chore.DueDate = DateTime.Today;
+
+        if (Chore.CreatedAt == default)
+            Chore.CreatedAt = DateTime.Today;
+    }
+
     private async Task AddChore()
     {
         using var context = DbFactory.CreateDbContext();

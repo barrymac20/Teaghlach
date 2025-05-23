@@ -26,7 +26,6 @@ namespace Teaghlach.Models
         [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
-        // Navigation property to chores (optional, only if you're using it)
         public List<Chore>? Chores { get; set; }
 
         [Required]

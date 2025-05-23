@@ -4,42 +4,37 @@
 <MudPopoverProvider />
 <MudThemeProvider />
 <MudLayout>
-	
+
 	<!-- Top App Bar -->
 
 	<MudAppBar Elevation="1" Color="Color.Default">
-		@*Style="background-color: white; color: black;"*@
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 		<MudText Typo="Typo.h5" Class="ml-3">Teaghlach</MudText>
 		<MudSpacer />
-		<MudText Class="pr-4">🕒 12:34 PM | 🌤️ 12°C</MudText> <!-- Placeholder -->
-		<MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+		<MudText Class="pr-4">🕒 @CurrentTime @CurrentWeather</MudText> <!-- Placeholder -->
 	</MudAppBar>
 
 	<!-- Left Nav Drawer -->
 
-	<MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
-		@*NavMenu*@
+	<MudDrawer @bind-Open="DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
 		<MudNavMenu>
 
-	        <!-- Top Menu Items -->
+			<!-- Top Menu Items -->
 			<MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard" ActiveClass="active-link" Class="nav-link">Dashboard</MudNavLink>
-	        <MudNavLink Href="/calendar" Icon="@Icons.Material.Filled.CalendarMonth" ActiveClass="active-link" Class="nav-link">Calendar</MudNavLink>
-	        <MudNavLink Href="/chores" Icon="@Icons.Material.Filled.Checklist" ActiveClass="active-link" Class="nav-link">Chores</MudNavLink>
-	        <MudNavLink Href="/rewards" Icon="@Icons.Material.Filled.Star" ActiveClass="active-link" Class="nav-link">Rewards</MudNavLink>
-	        <MudNavLink Href="/meals" Icon="@Icons.Material.Filled.Restaurant" ActiveClass="active-link" Class="nav-link">Meals</MudNavLink>
-	        @* <MudNavLink Href="/photos" Icon="@Icons.Material.Filled.PhotoLibrary" ActiveClass="active-link" Class="nav-link">Photos</MudNavLink> *@
-	        <MudNavLink Href="/lists" Icon="@Icons.Material.Filled.List" ActiveClass="active-link" Class="nav-link">Lists</MudNavLink>
-	        @* <MudNavLink Href="/games" Icon="@Icons.Material.Filled.Games" ActiveClass="active-link" Class="nav-link">Games</MudNavLink> *@
-	        <MudNavLink Href="/familymembers" Icon="@Icons.Material.Filled.FamilyRestroom" ActiveClass="active-link" Class="nav-link">My Family</MudNavLink> @*or groups2*@
+			<MudNavLink Href="/calendar" Icon="@Icons.Material.Filled.CalendarMonth" ActiveClass="active-link" Class="nav-link">Calendar</MudNavLink>
+			<MudNavLink Href="/chores" Icon="@Icons.Material.Filled.Checklist" ActiveClass="active-link" Class="nav-link">Chores</MudNavLink>
+			<MudNavLink Href="/rewards" Icon="@Icons.Material.Filled.Star" ActiveClass="active-link" Class="nav-link">Rewards</MudNavLink>
+			<MudNavLink Href="/meals" Icon="@Icons.Material.Filled.Restaurant" ActiveClass="active-link" Class="nav-link">Meals</MudNavLink>
+			<MudNavLink Href="/lists" Icon="@Icons.Material.Filled.List" ActiveClass="active-link" Class="nav-link">Lists</MudNavLink>
+			<MudNavLink Href="/familymembers" Icon="@Icons.Material.Filled.FamilyRestroom" ActiveClass="active-link" Class="nav-link">My Family</MudNavLink> @*or groups2*@
 
-	        <MudSpacer />
+			<MudSpacer />
 
-	        <!-- Bottom Settings Option -->
-	        <MudNavLink Href="/settings" Icon="@Icons.Material.Filled.Settings" ActiveClass="active-link" Class="mud-mt-auto nav-link">Settings</MudNavLink>
-	    </MudNavMenu>
+			<!-- Bottom Settings Option -->
+			<MudNavLink Href="/settings" Icon="@Icons.Material.Filled.Settings" ActiveClass="active-link" Class="mud-mt-auto nav-link">Settings</MudNavLink>
+		</MudNavMenu>
 	</MudDrawer>
-			
+
 	<!-- Main Content Area -->
 	<MudMainContent Class="pt-16" Style="background-color: #fafafa;">
 		@Body
@@ -48,38 +43,52 @@
 </MudLayout>
 
 <style>
-	/* .nav-link { */
-	/* 	background-color: #e0e0e0; */
-	/* 	color: black; */
-	/* 	transition: background-color 0.3s ease; */
-	/* 	width: 100%; */
-	/* } */
 
-	/* 	.nav-link:hover { */
-	/* 		background-color: #c0c0c0; */
-	/* 	} */
-
-	/* .active-link { */
-	/* 	background-color: white !important; */
-	/* 	color: black; */
-	/* 	font-weight: bold; */
-	/* } */
-
-	/* .mud-appbar { */
-	/* 	z-index: 1100; /* ensures it stays on top */ */
-	/* } */
-
-	/* .mud-drawer { */
-	/* 	top: 0; */
-	/* 	height: 100vh; */
-	/* } */
 </style>
 
 @code {
-	bool _drawerOpen = true;
+    private bool DrawerOpen = true;
+    private string CurrentTime = string.Empty;
+    private string CurrentWeather = "Loading...";
+    private Timer? Timer;
 
-	void DrawerToggle()
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    void DrawerToggle()
+    {
+        DrawerOpen = !DrawerOpen;
+    }
+
+    protected override void OnInitialized()
+    {
+        
+		Timer = new Timer(UpdateTime, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+    }
+	private void UpdateTime(object? state)
 	{
-		_drawerOpen = !_drawerOpen;
+		CurrentTime = DateTime.Now.ToString("HH:mm");
+		InvokeAsync(StateHasChanged);
 	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			try
+			{
+				CurrentWeather = await JS.InvokeAsync<string>("getWeather");
+				StateHasChanged();
+			}
+			catch (Exception ex)
+			{
+				CurrentWeather = "⚠️ Weather unavailable";
+				Console.Error.WriteLine($"Weather fetch failed: {ex.Message}");
+			}
+		}
+	}
+
+    public void Dispose()
+    {
+        Timer?.Dispose();
+    }
 }

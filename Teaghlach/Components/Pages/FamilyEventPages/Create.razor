@@ -12,14 +12,11 @@
 <hr />
 <div class="row">
 	<div class="col-md-4">
-		<EditForm method="post" Model="FamilyEvent" OnValidSubmit="AddFamilyEvent" FormName="create" Enhance>
+		<EditForm Model="FamilyEvent" OnValidSubmit="AddFamilyEvent">
+
 			<DataAnnotationsValidator />
 			<ValidationSummary class="text-danger" role="alert" />
-			<div class="mb-3">
-				<label for="title" class="form-label">Title:</label>
-				<InputText id="title" @bind-Value="FamilyEvent.Title" class="form-control" aria-required="true" />
-				<ValidationMessage For="() => FamilyEvent.Title" class="text-danger" />
-			</div>
+			
 			<div class="mb-3">
 				<label for="location" class="form-label">Location:</label>
 				<InputText id="location" @bind-Value="FamilyEvent.Location" class="form-control" />
@@ -62,7 +59,7 @@
 			<div class="mb-3">
 				<label for="color" class="form-label">Color:</label>
 				<input type="color" id="color" class="form-control form-control-color"
-					   @bind="FamilyEvent.Color" disabled/>
+					   @bind="FamilyEvent.Color" disabled />
 				<ValidationMessage For="() => FamilyEvent.Color" class="text-danger" />
 			</div>
 
@@ -112,7 +109,7 @@
 </div>
 
 <div>
-	<a href="/familyevents">Back to List</a>
+	<a href="/calendar">Back to Calendar</a>
 </div>
 
 @code {
@@ -130,23 +127,11 @@
 	private TimeOnly? startTime = null;
 	private TimeOnly? endTime = null;
 
-	// ------------------------------
+	// ------------------------------`
 	// Data Sources
 	// ------------------------------
 
 	private List<FamilyMember> FamilyMembers = new();
-
-	private List<string> Categories = new()
-	{
-		"Birthday",
-		"Sports",
-		"School",
-		"Appointment",
-		"Chore",
-		"Holiday",
-		"Other"
-	};
-
 	private List<EventCategory> EventCategories = new();
 	private List<EventSubCategory> AllSubCategories = new();
 	private List<EventSubCategory> FilteredSubCategories = new();
@@ -204,25 +189,10 @@
 		FamilyEvent.EventSubCategoryId = null;
 	}
 
-
-
-
 	// ------------------------------
 	// Submit Form
 	// ------------------------------
 
-	// private async Task AddFamilyEvent()
-	// {
-	// 	using var context = DbFactory.CreateDbContext();
-
-	// 	FamilyEvent.Start = FamilyEvent.Start.Date + startTime.Value.ToTimeSpan();
-	// 	FamilyEvent.End = FamilyEvent.End?.Date + endTime.Value.ToTimeSpan();
-
-	// 	context.FamilyEvents.Add(FamilyEvent);
-	// 	await context.SaveChangesAsync();
-
-	// 	NavigationManager.NavigateTo("/familyevents"); Or "/calendar"
-	// }
 
 	private async Task AddFamilyEvent()
 	{
@@ -251,8 +221,7 @@
 		context.FamilyEvents.Add(FamilyEvent);
 		await context.SaveChangesAsync();
 
-		NavigationManager.NavigateTo("/familyevents"); // Or "/calendar"
+		NavigationManager.NavigateTo("/calendar"); // Or "/calendar"
 	}
 
 }
-

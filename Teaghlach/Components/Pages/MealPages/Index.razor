@@ -1,0 +1,39 @@
+﻿@page "/meals"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Teaghlach.Models
+@using Teaghlach.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+
+<PageTitle>Meals</PageTitle>
+
+<h1>Meals</h1>
+
+<MudPaper Class="pa-4 mt-4" Elevation="2">
+    <MudText Typo="Typo.h5">Coming soon...</MudText>
+</MudPaper>
+
+@* <p> *@
+@*     <a href="meals/create">Create New</a> *@
+@* </p> *@
+
+@* <QuickGrid Class="table" Items="context.Meal"> *@
+
+@*     <TemplateColumn Context="meal"> *@
+@*         <a href="@($"meals/edit?id={meal.Id}")">Edit</a> | *@
+@*         <a href="@($"meals/details?id={meal.Id}")">Details</a> | *@
+@*         <a href="@($"meals/delete?id={meal.Id}")">Delete</a> *@
+@*     </TemplateColumn> *@
+@* </QuickGrid> *@
+
+@code {
+    private TeaghlachContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

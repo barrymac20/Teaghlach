@@ -163,10 +163,6 @@ namespace Teaghlach.Migrations
                     b.Property<bool>("AllDay")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("Category")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.Property<string>("Color")
                         .HasColumnType("longtext");
 
@@ -177,13 +173,13 @@ namespace Teaghlach.Migrations
                     b.Property<DateTime?>("End")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int?>("EventCategoryId")
+                    b.Property<int>("EventCategoryId")
                         .HasColumnType("int");
 
                     b.Property<int?>("EventSubCategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FamilyMemberId")
+                    b.Property<int>("FamilyMemberId")
                         .HasColumnType("int");
 
                     b.Property<string>("Location")
@@ -196,11 +192,6 @@ namespace Teaghlach.Migrations
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
 
@@ -228,6 +219,12 @@ namespace Teaghlach.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<int>("FamilyRoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FamilySubRoleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -243,7 +240,127 @@ namespace Teaghlach.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("FamilyRoleId");
+
+                    b.HasIndex("FamilySubRoleId");
+
                     b.ToTable("FamilyMembers");
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.FamilyRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FamilyRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Parent"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Child"
+                        });
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.FamilySubRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FamilyRoleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FamilyRoleId");
+
+                    b.ToTable("FamilySubRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FamilyRoleId = 1,
+                            Name = "Father"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FamilyRoleId = 1,
+                            Name = "Mother"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FamilyRoleId = 2,
+                            Name = "Son"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FamilyRoleId = 2,
+                            Name = "Daughter"
+                        });
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.List", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("List");
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.Meal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Meal");
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.Reward", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Reward");
                 });
 
             modelBuilder.Entity("Teaghlach.Data.Chore", b =>
@@ -270,7 +387,9 @@ namespace Teaghlach.Migrations
                 {
                     b.HasOne("Teaghlach.Models.EventCategory", "EventCategory")
                         .WithMany()
-                        .HasForeignKey("EventCategoryId");
+                        .HasForeignKey("EventCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Teaghlach.Models.EventSubCategory", "EventSubCategory")
                         .WithMany()
@@ -278,13 +397,43 @@ namespace Teaghlach.Migrations
 
                     b.HasOne("Teaghlach.Models.FamilyMember", "FamilyMember")
                         .WithMany()
-                        .HasForeignKey("FamilyMemberId");
+                        .HasForeignKey("FamilyMemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("EventCategory");
 
                     b.Navigation("EventSubCategory");
 
                     b.Navigation("FamilyMember");
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.FamilyMember", b =>
+                {
+                    b.HasOne("Teaghlach.Models.FamilyRole", "FamilyRole")
+                        .WithMany()
+                        .HasForeignKey("FamilyRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Teaghlach.Models.FamilySubRole", "FamilySubRole")
+                        .WithMany()
+                        .HasForeignKey("FamilySubRoleId");
+
+                    b.Navigation("FamilyRole");
+
+                    b.Navigation("FamilySubRole");
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.FamilySubRole", b =>
+                {
+                    b.HasOne("Teaghlach.Models.FamilyRole", "FamilyRole")
+                        .WithMany("FamilySubRoles")
+                        .HasForeignKey("FamilyRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FamilyRole");
                 });
 
             modelBuilder.Entity("Teaghlach.Models.EventCategory", b =>
@@ -295,6 +444,11 @@ namespace Teaghlach.Migrations
             modelBuilder.Entity("Teaghlach.Models.FamilyMember", b =>
                 {
                     b.Navigation("Chores");
+                });
+
+            modelBuilder.Entity("Teaghlach.Models.FamilyRole", b =>
+                {
+                    b.Navigation("FamilySubRoles");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,141 @@
+﻿@* @using Teaghlach.Models *@
+@* @using MudBlazor *@
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+
+<MudPaper Class="mx-auto my-6 p-6" MaxWidth="600px" Elevation="3">
+	<MudText Typo="Typo.h5" GutterBottom="true">📅 Event Details</MudText>
+	<MudDivider Class="my-2" />
+
+	@if (Event is null)
+	{
+		<MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+	}
+	else
+	{
+		
+			<MudList Dense="true" T="object">
+				<MudListItem><b>Text:</b> @Event.Text</MudListItem>
+				<MudListItem><b>Location:</b> @Event.Location</MudListItem>
+				<MudListItem><b>Description:</b> @Event.Description</MudListItem>
+				<MudListItem><b>Category:</b> @Event.EventCategory?.Name</MudListItem>
+				<MudListItem><b>Sub-Category:</b> @Event.EventSubCategory?.Name</MudListItem>
+				@* <MudListItem><b>Color:</b> @Event.Color</MudListItem> *@
+				<MudListItem><b>Family Member:</b> @Event.FamilyMember?.Name</MudListItem>
+				<MudListItem><b>Start:</b> @Event.Start</MudListItem>
+				<MudListItem><b>End:</b> @Event.End</MudListItem>
+				<MudListItem><b>All Day Event:</b> @(Event.AllDay ? "Yes" : "No")</MudListItem>
+				
+			</MudList>
+
+			<MudDivider Class="my-4" />
+
+			<MudStack Direction="Row" Spacing="2">
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@($"/familyevents/edit?id={Event.Id}")">
+					Edit
+				</MudButton>
+				<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@($"/familyevents/delete?id={Event.Id}")">
+					Delete
+				</MudButton>
+				<MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/calendar">
+					Back to List
+				</MudButton>
+			</MudStack>
+		}
+	}
+</MudPaper>
+
+@code {
+	[Parameter]
+	public FamilyEvent? Event { get; set; }
+
+	[Parameter]
+	public bool IsReadOnly { get; set; } = true;
+
+	[Parameter]
+	public EventCallback<FamilyEvent> OnSubmitEvent { get; set; }
+
+	private List<EventCategory> EventCategories = new();
+	private List<EventSubCategory> AllSubCategories = new();
+	private List<EventSubCategory> FilteredSubCategories = new();
+	private List<FamilyMember> FamilyMembers = new();
+
+	private readonly Dictionary<int, string> CategoryColors = new()
+{
+	{ 1, "#FFB6C1" }, // Birthday
+    { 2, "#ADD8E6" }, // Sports
+    { 3, "#90EE90" }, // School
+    { 4, "#FFD700" }, // Appointment
+    { 5, "#FFA07A" }, // Chore
+    { 6, "#20B2AA" }, // Holiday
+    { 7, "#D3D3D3" }, // Other
+};
+
+	protected override async Task OnInitializedAsync()
+	{
+		using var context = await DbFactory.CreateDbContextAsync();
+		FamilyMembers = await context.FamilyMembers.ToListAsync();
+		EventCategories = await context.EventCategories.ToListAsync();
+		AllSubCategories = await context.EventSubCategories.ToListAsync();
+
+		// Pre-filter subcategories for edit
+		if (Event?.EventCategoryId != null)
+		{
+			FilteredSubCategories = AllSubCategories
+				.Where(sc => sc.EventCategoryId == Event.EventCategoryId)
+				.ToList();
+		}
+	}
+
+	private void HandleCategoryChanged(int? selectedCategoryId)
+	{
+		Event!.EventCategoryId = selectedCategoryId;
+
+		if (selectedCategoryId.HasValue)
+		{
+			if (CategoryColors.TryGetValue(selectedCategoryId.Value, out var color))
+			{
+				Event.Color = color;
+			}
+
+			FilteredSubCategories = AllSubCategories
+				.Where(sc => sc.EventCategoryId == selectedCategoryId)
+				.ToList();
+		}
+		else
+		{
+			FilteredSubCategories.Clear();
+		}
+
+		Event.EventSubCategoryId = null;
+	}
+
+
+
+	private async Task HandleValidSubmit(EditContext context)
+	{
+		if (OnSubmitEvent.HasDelegate)
+		{
+			await OnSubmitEvent.InvokeAsync(Event!);
+		}
+	}
+
+	private async Task SaveToDbDirectly()
+	{
+		using var context = await DbFactory.CreateDbContextAsync();
+
+		if (Event!.Id == 0)
+		{
+			context.FamilyEvents.Add(Event);
+		}
+		else
+		{
+			context.FamilyEvents.Update(Event);
+		}
+
+		await context.SaveChangesAsync();
+
+		NavigationManager.NavigateTo("/calendar");
+	}
+}

@@ -13,16 +13,16 @@
 </p>
 
 <QuickGrid Class="table" Items="context.FamilyEvents">
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Title" />
+    
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Text" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Location" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Description" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Category" />
+    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.EventCategory.Name" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Color" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="int?" Property="familyevent => familyevent.FamilyMemberId" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="DateTime" Property="familyevent => familyevent.Start" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="DateTime?" Property="familyevent => familyevent.End" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="bool" Property="familyevent => familyevent.AllDay" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="string" Property="familyevent => familyevent.Text" />
 
 
     <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn Context="familyevent">

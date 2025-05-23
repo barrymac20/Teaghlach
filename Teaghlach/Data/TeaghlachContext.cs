@@ -19,7 +19,11 @@ namespace Teaghlach.Data
         public DbSet<FamilyEvent> FamilyEvents { get; set; }
         public DbSet<EventCategory> EventCategories { get; set; }
         public DbSet<EventSubCategory> EventSubCategories { get; set; }
-
+        public DbSet<FamilyRole> FamilyRoles { get; set; }
+        public DbSet<FamilySubRole> FamilySubRoles { get; set; }
+        public DbSet<Reward> Rewards { get; set; }
+        public DbSet<Meal> Meals { get; set; }
+        public DbSet<List> Lists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,7 +45,24 @@ namespace Teaghlach.Data
                 new EventSubCategory { Id = 5, Name = "Child's Birthday", EventCategoryId = 3 },
                 new EventSubCategory { Id = 6, Name = "Party", EventCategoryId = 3 }
             );
+
+            // Seed FamilyRoles
+            modelBuilder.Entity<FamilyRole>().HasData(
+                new FamilyRole { Id = 1, Name = "Parent" },
+                new FamilyRole { Id = 2, Name = "Child" }
+            );
+
+            // Seed FamilySubRoles
+            modelBuilder.Entity<FamilySubRole>().HasData(
+                new FamilySubRole { Id = 1, Name = "Father", FamilyRoleId = 1 },
+                new FamilySubRole { Id = 2, Name = "Mother", FamilyRoleId = 1 },
+                new FamilySubRole { Id = 3, Name = "Son", FamilyRoleId = 2 },
+                new FamilySubRole { Id = 4, Name = "Daughter", FamilyRoleId = 2 }
+            );
         }
+        public DbSet<Teaghlach.Models.Reward> Reward { get; set; } = default!;
+        public DbSet<Teaghlach.Models.Meal> Meal { get; set; } = default!;
+        public DbSet<Teaghlach.Models.List> List { get; set; } = default!;
 
 
     }

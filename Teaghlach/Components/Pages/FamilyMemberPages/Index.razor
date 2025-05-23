@@ -11,30 +11,35 @@
 <h1>Index</h1>
 
 <p>
-    <a href="familymembers/create">Create New</a>
+	<a href="familymembers/create">Create New</a>
 </p>
 
 <QuickGrid Class="table" Items="context.FamilyMembers">
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.Name" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.Role" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="DateTime?" Property="familymember => familymember.DateOfBirth" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.Email" />
-    <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.PhoneNumber" />
+	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.Name" Title="Name"/>
+	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.FamilyRole.Name" Title="Family Role" />
+	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.FamilySubRole.Name" Title="Sub Role" />
+	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="DateTime?" Property="familymember => familymember.DateOfBirth" Title="Date of Birth" />
+	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.Email" Title="Email Address" />
+	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.PhoneNumber" Title="Phone Number" />
 
-    <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn TGridItem="FamilyMember" Context="familymember">
-        <a href="@($"familymembers/edit?id={familymember.Id}")">Edit</a> |
-        <a href="@($"familymembers/details?id={familymember.Id}")">Details</a> |
-        <a href="@($"familymembers/delete?id={familymember.Id}")">Delete</a>
-    </Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn>
+	<Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn TGridItem="FamilyMember" Context="familymember">
+		<a href="@($"familymembers/edit?id={familymember.Id}")">Edit</a> |
+		<a href="@($"familymembers/details?id={familymember.Id}")">Details</a> |
+		<a href="@($"familymembers/delete?id={familymember.Id}")">Delete</a>
+	</Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn>
 </QuickGrid>
 
 @code {
-    private TeaghlachContext context = default!;
+	private TeaghlachContext context = default!;
 
-    protected override void OnInitialized()
-    {
-        context = DbFactory.CreateDbContext();
-    }
+	protected override void OnInitialized()
+	{
+		context = DbFactory.CreateDbContext();
+		context.FamilyMembers
+		.Include(f => f.FamilyRole)
+		.Include(f => f.FamilySubRole)
+		.Load();
+	}
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+	public async ValueTask DisposeAsync() => await context.DisposeAsync();
 }

@@ -9,46 +9,52 @@
 <h1>Details</h1>
 
 <div>
-    <h2>FamilyMember</h2>
-    <hr />
-    @if (familymember is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@familymember.Name</dd>
-            <dt class="col-sm-2">Role</dt>
-            <dd class="col-sm-10">@familymember.Role</dd>
-            <dt class="col-sm-2">DateOfBirth</dt>
-            <dd class="col-sm-10">@familymember.DateOfBirth</dd>
-            <dt class="col-sm-2">Email</dt>
-            <dd class="col-sm-10">@familymember.Email</dd>
-            <dt class="col-sm-2">PhoneNumber</dt>
-            <dd class="col-sm-10">@familymember.PhoneNumber</dd>
-        </dl>
-        <div>
-            <a href="@($"/familymembers/edit?id={familymember.Id}")">Edit</a> |
-            <a href="@($"/familymembers")">Back to List</a>
-        </div>
-    }
+	<h2>FamilyMember</h2>
+	<hr />
+	@if (familymember is null)
+	{
+		<p><em>Loading...</em></p>
+	}
+	else
+	{
+		<dl class="row">
+			<dt class="col-sm-2">Name</dt>
+			<dd class="col-sm-10">@familymember.Name</dd>
+			<dt class="col-sm-2">Family Role</dt>
+			<dd class="col-sm-10">@familymember.FamilyRole?.Name</dd>
+			<dt class="col-sm-2">Sub Role</dt>
+			<dd class="col-sm-10">@familymember.FamilySubRole?.Name</dd>
+			<dt class="col-sm-2">DateOfBirth</dt>
+			<dd class="col-sm-10">@familymember.DateOfBirth</dd>
+			<dt class="col-sm-2">Email</dt>
+			<dd class="col-sm-10">@familymember.Email</dd>
+			<dt class="col-sm-2">PhoneNumber</dt>
+			<dd class="col-sm-10">@familymember.PhoneNumber</dd>
+		</dl>
+		<div>
+			<a href="@($"/familymembers/edit?id={familymember.Id}")">Edit</a> |
+			<a href="@($"/familymembers")">Back to List</a>
+		</div>
+	}
 </div>
 
 @code {
-    private FamilyMember? familymember;
+	private FamilyMember? familymember;
 
-    [SupplyParameterFromQuery]
-    private int Id { get; set; }
+	[SupplyParameterFromQuery]
+	private int Id { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        using var context = DbFactory.CreateDbContext();
-        familymember = await context.FamilyMembers.FirstOrDefaultAsync(m => m.Id == Id);
+	protected override async Task OnInitializedAsync()
+	{
+		using var context = DbFactory.CreateDbContext();
+		familymember = await context.FamilyMembers
+	.Include(m => m.FamilyRole)
+	.Include(m => m.FamilySubRole)
+	.FirstOrDefaultAsync(m => m.Id == Id);
 
-        if (familymember is null)
-        {
-            NavigationManager.NavigateTo("notfound");
-        }
-    }
+		if (familymember is null)
+		{
+			NavigationManager.NavigateTo("notfound");
+		}
+	}
 }

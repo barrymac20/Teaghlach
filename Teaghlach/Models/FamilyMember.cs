@@ -28,5 +28,13 @@ namespace Teaghlach.Models
 
         // Navigation property to chores (optional, only if you're using it)
         public List<Chore>? Chores { get; set; }
+
+        [Required]
+        public int? FamilyRoleId { get; set; }
+
+        public FamilyRole? FamilyRole { get; set; }
+
+        public int? FamilySubRoleId { get; set; }
+        public FamilySubRole? FamilySubRole { get; set; }
     }
 }

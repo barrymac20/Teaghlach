@@ -22,19 +22,23 @@
             <dd class="col-sm-10">@familymember.Name</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">Role</dt>
-            <dd class="col-sm-10">@familymember.Role</dd>
+            <dt class="col-sm-2">Family Role</dt>
+            <dd class="col-sm-10">@familymember.FamilyRole?.Name</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">DateOfBirth</dt>
+            <dt class="col-sm-2">Sub Role</dt>
+            <dd class="col-sm-10">@familymember.FamilySubRole?.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">Date Of Birth</dt>
             <dd class="col-sm-10">@familymember.DateOfBirth</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">Email</dt>
+            <dt class="col-sm-2">Email Address</dt>
             <dd class="col-sm-10">@familymember.Email</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">PhoneNumber</dt>
+            <dt class="col-sm-2">Phone Number</dt>
             <dd class="col-sm-10">@familymember.PhoneNumber</dd>
         </dl>
         <EditForm method="post" Model="familymember" OnValidSubmit="DeleteFamilyMember" FormName="delete" Enhance>
@@ -53,7 +57,10 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        familymember = await context.FamilyMembers.FirstOrDefaultAsync(m => m.Id == Id);
+        familymember = await context.FamilyMembers
+    .Include(m => m.FamilyRole)
+    .Include(m => m.FamilySubRole)
+    .FirstOrDefaultAsync(m => m.Id == Id);
 
         if (familymember is null)
         {

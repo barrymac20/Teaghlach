@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Teaghlach.Data;
 using MudBlazor.Services;
@@ -19,6 +19,8 @@ builder.Services.AddDbContextFactory<TeaghlachContext>(options =>
 builder.Services.AddMudServices();
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -37,6 +39,7 @@ else
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
+    app.UseMigrationsEndPoint();
 }
 
 app.UseHttpsRedirection();

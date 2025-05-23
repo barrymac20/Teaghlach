@@ -1,0 +1,39 @@
+﻿@page "/rewards/create"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Models
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Reward</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Reward" OnValidSubmit="AddReward" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/rewards">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Reward Reward { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddReward()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Reward.Add(Reward);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/rewards");
+    }
+}

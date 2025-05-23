@@ -1,18 +1,17 @@
 ﻿@page "/calendar"
 @inject IDbContextFactory<TeaghlachContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject ILogger<Calendar> Logger
 
 <MudCalendar T="FamilyEvent"
 			 Items="@events"
 			 EnableDragItems="true"
 			 EnableResizeItems="true"
 			 View="CalendarView.Week"
-
 			 ShowDay="@_showDay"
 			 ShowWeek="@_showWeek"
 			 ShowMonth="@_showMonth"
 			 ShowWorkWeek="@_showWorkWeek"
-			 
 			 ShowCurrentTime="true"
 			 DayStartTime="new TimeOnly(9, 0)"
 			 DayCellHeight="18"
@@ -30,8 +29,19 @@
 	<WeekTemplate Context="item">
 		@{
 			var fe = item as FamilyEvent;
+			var duration = fe?.End.HasValue == true
+			? (fe.End.Value - fe.Start).TotalMinutes
+			: 60;
+			var height = duration * 1;
 		}
-		<div style="background-color:@fe?.Color; padding:6px; color:white; border-radius:4px; text-align:center;">
+		<div style="
+        background-color:@fe?.Color;
+        height:@($"{height}px");
+        padding:6px;
+        color:white;
+        border-radius:4px;
+        text-align:center;
+        box-sizing:border-box;">
 			@fe?.Text
 		</div>
 	</WeekTemplate>
@@ -39,11 +49,23 @@
 	<DayTemplate Context="item">
 		@{
 			var fe = item as FamilyEvent;
+			var duration = fe?.End.HasValue == true
+			? (fe.End.Value - fe.Start).TotalMinutes
+			: 60;
+			var height = duration * 1;
 		}
-		<div style="background-color:@fe?.Color; padding:6px; color:white; border-radius:4px; text-align:center;">
+		<div style="
+        background-color:@fe?.Color;
+        height:@($"{height}px");
+        padding:6px;
+        color:white;
+        border-radius:4px;
+        text-align:center;
+        box-sizing:border-box;">
 			@fe?.Text
 		</div>
 	</DayTemplate>
+
 
 	<MonthTemplate Context="item">
 		@{
@@ -70,7 +92,22 @@
 	{
 		_context = DbFactory.CreateDbContext();
 		events = await _context.FamilyEvents.ToListAsync();
+
+		foreach (var e in events)
+		{
+			// Ensure Text is set (used in templates)
+			// if (string.IsNullOrWhiteSpace(e.Text))
+			// 	e.Text = e.Title;
+
+			if (e.End == null || e.End.Value == e.Start)
+			{
+				e.End = e.Start.AddHours(2); // or however long you want as a default
+			}
+		}
 	}
+
+
+
 
 	// Map CalendarItem to FamilyEvent and navigate to details
 	private void OnEventClick(CalendarItem item)

@@ -1,0 +1,41 @@
+﻿@page "/rewards"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Teaghlach.Models
+@using Teaghlach.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+
+<PageTitle>Rewards</PageTitle>
+
+<h1>Rewards</h1>
+
+<MudPaper Class="pa-4 mt-4" Elevation="2">
+    <MudText Typo="Typo.h5">Coming soon...</MudText>
+</MudPaper>
+
+@* <h1>Index</h1> *@
+
+@* <p> *@
+@*     <a href="rewards/create">Create New</a> *@
+@* </p> *@
+
+@* <QuickGrid Class="table" Items="context.Reward"> *@
+
+@*     <TemplateColumn Context="reward"> *@ 
+@*          <a href="@($"rewards/edit?id={reward.Id}")">Edit</a> | *@ 
+@*          <a href="@($"rewards/details?id={reward.Id}")">Details</a> | *@ 
+@*          <a href="@($"rewards/delete?id={reward.Id}")">Delete</a> *@ 
+@*      </TemplateColumn> *@ 
+@* </QuickGrid> *@
+
+@code {
+    private TeaghlachContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

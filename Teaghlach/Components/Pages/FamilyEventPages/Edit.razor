@@ -7,128 +7,202 @@
 <PageTitle>Edit</PageTitle>
 
 <h1>Edit</h1>
-
 <h2>FamilyEvent</h2>
 <hr />
-@if (FamilyEvent is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="FamilyEvent" OnValidSubmit="UpdateFamilyEvent" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="FamilyEvent.Id" value="@FamilyEvent.Id" />
-                <div class="mb-3">
-                    <label for="title" class="form-label">Title:</label>
-                    <InputText id="title" @bind-Value="FamilyEvent.Title" class="form-control" aria-required="true"/>
-                    <ValidationMessage For="() => FamilyEvent.Title" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="location" class="form-label">Location:</label>
-                    <InputText id="location" @bind-Value="FamilyEvent.Location" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.Location" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
-                    <InputText id="description" @bind-Value="FamilyEvent.Description" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.Description" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="category" class="form-label">Category:</label>
-                    <InputText id="category" @bind-Value="FamilyEvent.Category" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.Category" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="color" class="form-label">Color:</label>
-                    <InputText id="color" @bind-Value="FamilyEvent.Color" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.Color" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="familymemberid" class="form-label">FamilyMemberId:</label>
-                    <InputNumber id="familymemberid" @bind-Value="FamilyEvent.FamilyMemberId" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.FamilyMemberId" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="start" class="form-label">Start:</label>
-                    <InputDate id="start" @bind-Value="FamilyEvent.Start" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.Start" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="end" class="form-label">End:</label>
-                    <InputDate id="end" @bind-Value="FamilyEvent.End" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.End" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="allday" class="form-label">AllDay:</label>
-                    <InputCheckbox id="allday" @bind-Value="FamilyEvent.AllDay" class="form-check-input" />
-                    <ValidationMessage For="() => FamilyEvent.AllDay" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="text" class="form-label">Text:</label>
-                    <InputText id="text" @bind-Value="FamilyEvent.Text" class="form-control" />
-                    <ValidationMessage For="() => FamilyEvent.Text" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
-        </div>
-    </div>
-}
+<div class="row">
+	<div class="col-md-4">
+		<EditForm Model="FamilyEvent" OnValidSubmit="UpdateFamilyEvent">
+			<DataAnnotationsValidator />
+			<ValidationSummary class="text-danger" role="alert" />
+
+			<div class="mb-3">
+				<label for="text" class="form-label">Text:</label>
+				<InputText id="text" @bind-Value="FamilyEvent.Text" class="form-control" />
+				<ValidationMessage For="() => FamilyEvent.Text" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="location" class="form-label">Location:</label>
+				<InputText id="location" @bind-Value="FamilyEvent.Location" class="form-control" />
+				<ValidationMessage For="() => FamilyEvent.Location" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="description" class="form-label">Description:</label>
+				<InputText id="description" @bind-Value="FamilyEvent.Description" class="form-control" />
+				<ValidationMessage For="() => FamilyEvent.Description" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="category" class="form-label">Category:</label>
+				<InputSelect id="category"
+							 class="form-select"
+							 Value="FamilyEvent.EventCategoryId"
+							 ValueChanged="@(EventCallback.Factory.Create<int?>(this, HandleCategoryChanged))"
+							 ValueExpression="() => FamilyEvent.EventCategoryId">
+					<option value="">-- Select Category --</option>
+					@foreach (var cat in EventCategories)
+					{
+						<option value="@cat.Id">@cat.Name</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="() => FamilyEvent.EventCategoryId" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="subcategory" class="form-label">Subcategory:</label>
+				<InputSelect id="subcategory" class="form-select" @bind-Value="FamilyEvent.EventSubCategoryId">
+					<option value="">-- Select Subcategory --</option>
+					@foreach (var sub in FilteredSubCategories)
+					{
+						<option value="@sub.Id">@sub.Name</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="() => FamilyEvent.EventSubCategoryId" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="color" class="form-label">Color:</label>
+				<input type="color" id="color" class="form-control form-control-color"
+					   @bind="FamilyEvent.Color" disabled />
+				<ValidationMessage For="() => FamilyEvent.Color" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="familymemberid" class="form-label">Family Member:</label>
+				<InputSelect id="familymemberid" @bind-Value="FamilyEvent.FamilyMemberId" class="form-select">
+					<option value="">-- Select Family Member --</option>
+					@foreach (var member in FamilyMembers)
+					{
+						<option value="@member.Id">@member.Name</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="() => FamilyEvent.FamilyMemberId" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="start" class="form-label">Start:</label>
+				<div class="d-flex">
+					<InputDate id="start" @bind-Value="FamilyEvent.Start" class="form-control" />
+					<input type="time" id="startTime" @bind="startTime" class="form-control ms-2" />
+				</div>
+				<ValidationMessage For="() => FamilyEvent.Start" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="end" class="form-label">End:</label>
+				<div class="d-flex">
+					<InputDate id="end" @bind-Value="FamilyEvent.End" class="form-control" />
+					<input type="time" id="endTime" @bind="endTime" class="form-control ms-2" />
+				</div>
+				<ValidationMessage For="() => FamilyEvent.End" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="allday" class="form-label">AllDay:</label>
+				<InputCheckbox id="allday" @bind-Value="FamilyEvent.AllDay" class="form-check-input" />
+				<ValidationMessage For="() => FamilyEvent.AllDay" class="text-danger" />
+			</div>
+			
+
+			<button type="submit" class="btn btn-primary">Save</button>
+		</EditForm>
+	</div>
+</div>
 
 <div>
-    <a href="/familyevents">Back to List</a>
+	<a href="/calendar">Back to Calendar</a>
 </div>
 
 @code {
-    [SupplyParameterFromQuery]
-    private int Id { get; set; }
+	[SupplyParameterFromQuery]
+	private int Id { get; set; }
 
-    [SupplyParameterFromForm]
-    private FamilyEvent? FamilyEvent { get; set; }
+	private FamilyEvent FamilyEvent = new();
+	private TimeOnly? startTime = null;
+	private TimeOnly? endTime = null;
 
-    protected override async Task OnInitializedAsync()
-    {
-        using var context = DbFactory.CreateDbContext();
-        FamilyEvent ??= await context.FamilyEvents.FirstOrDefaultAsync(m => m.Id == Id);
+	private List<FamilyMember> FamilyMembers = new();
+	private List<EventCategory> EventCategories = new();
+	private List<EventSubCategory> AllSubCategories = new();
+	private List<EventSubCategory> FilteredSubCategories = new();
 
-        if (FamilyEvent is null)
-        {
-            NavigationManager.NavigateTo("notfound");
-        }
-    }
+	private readonly Dictionary<int, string> CategoryColors = new()
+	{
+		{ 1, "#FFB6C1" },
+		{ 2, "#ADD8E6" },
+		{ 3, "#90EE90" },
+		{ 4, "#FFD700" },
+		{ 5, "#FFA07A" },
+		{ 6, "#20B2AA" },
+		{ 7, "#D3D3D3" },
+	};
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task UpdateFamilyEvent()
-    {
-        using var context = DbFactory.CreateDbContext();
-        context.Attach(FamilyEvent!).State = EntityState.Modified;
+	protected override async Task OnInitializedAsync()
+	{
+		using var context = await DbFactory.CreateDbContextAsync();
 
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!FamilyEventExists(FamilyEvent!.Id))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
-        }
+		FamilyMembers = await context.FamilyMembers.ToListAsync();
+		EventCategories = await context.EventCategories.ToListAsync();
+		AllSubCategories = await context.EventSubCategories.ToListAsync();
 
-        NavigationManager.NavigateTo("/familyevents");
-    }
+		FamilyEvent = await context.FamilyEvents
+			.FirstOrDefaultAsync(f => f.Id == Id)
+			?? new FamilyEvent();
 
-    private bool FamilyEventExists(int id)
-    {
-        using var context = DbFactory.CreateDbContext();
-        return context.FamilyEvents.Any(e => e.Id == id);
-    }
+		FilteredSubCategories = AllSubCategories
+			.Where(sc => sc.EventCategoryId == FamilyEvent.EventCategoryId)
+			.ToList();
+
+		if (!string.IsNullOrEmpty(FamilyEvent.Color) && CategoryColors.ContainsValue(FamilyEvent.Color))
+		{
+			// no-op: color is already set
+		}
+
+		if (FamilyEvent.Start != default)
+			startTime = TimeOnly.FromDateTime(FamilyEvent.Start);
+
+		if (FamilyEvent.End.HasValue)
+			endTime = TimeOnly.FromDateTime(FamilyEvent.End.Value);
+	}
+
+	private void HandleCategoryChanged(int? selectedCategoryId)
+	{
+		FamilyEvent.EventCategoryId = selectedCategoryId;
+
+		if (selectedCategoryId.HasValue)
+		{
+			if (CategoryColors.TryGetValue(selectedCategoryId.Value, out var color))
+			{
+				FamilyEvent.Color = color;
+			}
+
+			FilteredSubCategories = AllSubCategories
+				.Where(sc => sc.EventCategoryId == selectedCategoryId)
+				.ToList();
+		}
+		else
+		{
+			FilteredSubCategories.Clear();
+		}
+
+		FamilyEvent.EventSubCategoryId = null;
+	}
+
+	private async Task UpdateFamilyEvent()
+	{
+		using var context = await DbFactory.CreateDbContextAsync();
+
+		FamilyEvent.Start = FamilyEvent.Start.Date + (startTime?.ToTimeSpan() ?? TimeSpan.Zero);
+
+		if (FamilyEvent.End.HasValue)
+		{
+			FamilyEvent.End = FamilyEvent.End.Value.Date + (endTime?.ToTimeSpan() ?? TimeSpan.FromHours(1));
+		}
+		else
+		{
+			FamilyEvent.End = FamilyEvent.Start.AddHours(1);
+		}
+
+		if (FamilyEvent.End <= FamilyEvent.Start)
+		{
+			FamilyEvent.End = FamilyEvent.Start.AddHours(1);
+		}
+
+		context.FamilyEvents.Update(FamilyEvent);
+		await context.SaveChangesAsync();
+
+		NavigationManager.NavigateTo("/calendar");
+	}
 }

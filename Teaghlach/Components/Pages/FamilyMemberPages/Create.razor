@@ -11,54 +11,124 @@
 <h2>FamilyMember</h2>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <EditForm method="post" Model="FamilyMember" OnValidSubmit="AddFamilyMember" FormName="create" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <label for="name" class="form-label">Name:</label> 
-                <InputText id="name" @bind-Value="FamilyMember.Name" class="form-control" aria-required="true"/> 
-                <ValidationMessage For="() => FamilyMember.Name" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="role" class="form-label">Role:</label> 
-                <InputText id="role" @bind-Value="FamilyMember.Role" class="form-control" /> 
-                <ValidationMessage For="() => FamilyMember.Role" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="dateofbirth" class="form-label">DateOfBirth:</label> 
-                <InputDate id="dateofbirth" @bind-Value="FamilyMember.DateOfBirth" class="form-control" /> 
-                <ValidationMessage For="() => FamilyMember.DateOfBirth" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="email" class="form-label">Email:</label> 
-                <InputText id="email" @bind-Value="FamilyMember.Email" class="form-control" /> 
-                <ValidationMessage For="() => FamilyMember.Email" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="phonenumber" class="form-label">PhoneNumber:</label> 
-                <InputText id="phonenumber" @bind-Value="FamilyMember.PhoneNumber" class="form-control" /> 
-                <ValidationMessage For="() => FamilyMember.PhoneNumber" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
-        </EditForm>
-    </div>
+	<div class="col-md-4">
+		<EditForm method="post" Model="FamilyMember" OnValidSubmit="AddFamilyMember" FormName="create" Enhance>
+			<DataAnnotationsValidator />
+			<ValidationSummary class="text-danger" role="alert" />
+			<div class="mb-3">
+				<label for="name" class="form-label">Name:</label>
+				<InputText id="name" @bind-Value="FamilyMember.Name" class="form-control" aria-required="true" />
+				<ValidationMessage For="() => FamilyMember.Name" class="text-danger" />
+			</div>
+
+
+			<div class="mb-3">
+				<label for="category" class="form-label">Family Role:</label>
+				<InputSelect id="role"
+							 class="form-select"
+							 Value="FamilyMember.FamilyRoleId"
+							 ValueChanged="@(
+                 EventCallback.Factory.Create<int?>(this, HandleRoleChanged)
+             )"
+							 ValueExpression="() => FamilyMember.FamilyRoleId">
+					<option value="">-- Select Category --</option>
+					@foreach (var role in FamilyRoles)
+					{
+						<option value="@role.Id">@role.Name</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="() => FamilyMember.FamilyRoleId" class="text-danger" />
+			</div>
+
+			<div class="mb-3">
+				<label for="subRole" class="form-label">Family Sub Role:</label>
+				<InputSelect id="subRole" class="form-select" @bind-Value="FamilyMember.FamilySubRoleId">
+					<option value="">-- Select Subcategory --</option>
+					@foreach (var sub in FilteredSubRoles)
+					{
+						<option value="@sub.Id">@sub.Name</option>
+					}
+				</InputSelect>
+				<ValidationMessage For="() => FamilyMember.FamilySubRoleId" class="text-danger" />
+			</div>
+
+			<div class="mb-3">
+				<label for="dateofbirth" class="form-label">Date Of Birth:</label>
+				<InputDate id="dateofbirth" @bind-Value="FamilyMember.DateOfBirth" class="form-control" />
+				<ValidationMessage For="() => FamilyMember.DateOfBirth" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="email" class="form-label">Email Address:</label>
+				<InputText id="email" @bind-Value="FamilyMember.Email" class="form-control" disabled="@IsChildRoleSelected" />
+				<ValidationMessage For="() => FamilyMember.Email" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="phonenumber" class="form-label">Phone Number:</label>
+				<InputText id="phonenumber" @bind-Value="FamilyMember.PhoneNumber" class="form-control" disabled="@IsChildRoleSelected" />
+				<ValidationMessage For="() => FamilyMember.PhoneNumber" class="text-danger" />
+			</div>
+			<button type="submit" class="btn btn-primary">Create</button>
+		</EditForm>
+	</div>
 </div>
 
 <div>
-    <a href="/familymembers">Back to List</a>
+	<a href="/familymembers">Back to List</a>
 </div>
 
 @code {
-    [SupplyParameterFromForm]
-    private FamilyMember FamilyMember { get; set; } = new();
+	[SupplyParameterFromForm]
+	private FamilyMember FamilyMember { get; set; } = new();
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task AddFamilyMember()
-    {
-        using var context = DbFactory.CreateDbContext();
-        context.FamilyMembers.Add(FamilyMember);
-        await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/familymembers");
-    }
+	private List<FamilyRole> FamilyRoles = new();
+	private List<FamilySubRole> AllSubRoles = new();
+	private List<FamilySubRole> FilteredSubRoles = new();
+
+	private bool IsChildRoleSelected => SelectedRoleName?.ToLower() == "child";
+	private string? SelectedRoleName { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		using var context = await DbFactory.CreateDbContextAsync();
+		FamilyRoles = await context.FamilyRoles.ToListAsync();
+		AllSubRoles = await context.FamilySubRoles.ToListAsync();
+	}
+
+	private async Task AddFamilyMember()
+	{
+		using var context = DbFactory.CreateDbContext();
+		context.FamilyMembers.Add(FamilyMember);
+		await context.SaveChangesAsync();
+		NavigationManager.NavigateTo("/familymembers");
+	}
+
+	private void HandleRoleChanged(int? selectedRoleId)
+	{
+		FamilyMember.FamilyRoleId = selectedRoleId;
+
+		if (selectedRoleId.HasValue)
+		{
+			var selectedRole = FamilyRoles.FirstOrDefault(r => r.Id == selectedRoleId.Value);
+			SelectedRoleName = selectedRole?.Name;
+
+			if (SelectedRoleName?.ToLower() == "child")
+			{
+				FamilyMember.Email = "n/a";
+				FamilyMember.PhoneNumber = "n/a";
+			}
+			else
+			{
+				// Clear the fields when role is not "Child"
+				if (FamilyMember.Email == "n/a") FamilyMember.Email = string.Empty;
+				if (FamilyMember.PhoneNumber == "n/a") FamilyMember.PhoneNumber = string.Empty;
+			}
+		}
+
+		FilteredSubRoles = selectedRoleId.HasValue
+			? AllSubRoles.Where(sc => sc.FamilyRoleId == selectedRoleId).ToList()
+			: new List<FamilySubRole>();
+
+		FamilyMember.FamilySubRoleId = null;
+	}
+
 }

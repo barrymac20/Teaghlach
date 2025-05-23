@@ -1,0 +1,44 @@
+﻿@page "/rewards/details"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Models
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Reward</h2>
+    <hr />
+    @if (reward is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+        </dl>
+        <div>
+            <a href="@($"/rewards/edit?id={reward.Id}")">Edit</a> |
+            <a href="@($"/rewards")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Reward? reward;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        reward = await context.Reward.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (reward is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

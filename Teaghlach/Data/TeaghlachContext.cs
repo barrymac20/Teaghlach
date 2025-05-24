@@ -4,16 +4,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Teaghlach.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Teaghlach.Data
 {
-    public class TeaghlachContext : DbContext
+    public class TeaghlachContext : IdentityDbContext<IdentityUser>
     {
         public TeaghlachContext(DbContextOptions<TeaghlachContext> options)
             : base(options)
         {
         }
-
         public DbSet<FamilyMember> FamilyMembers { get; set; } = default!;
         public DbSet<Chore> Chores { get; set; }
         public DbSet<FamilyEvent> FamilyEvents { get; set; }
@@ -24,7 +25,10 @@ namespace Teaghlach.Data
         public DbSet<Reward> Rewards { get; set; }
         public DbSet<Meal> Meals { get; set; }
         public DbSet<List> Lists { get; set; }
-        
+
+        public DbSet<Reward> Reward { get; set; } = default!;
+        public DbSet<Meal> Meal { get; set; } = default!;
+        public DbSet<List> List { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -61,12 +65,6 @@ namespace Teaghlach.Data
                 new FamilySubRole { Id = 4, Name = "Daughter", FamilyRoleId = 2 }
             );
         }
-        public DbSet<Teaghlach.Models.Reward> Reward { get; set; } = default!;
-        public DbSet<Teaghlach.Models.Meal> Meal { get; set; } = default!;
-        public DbSet<Teaghlach.Models.List> List { get; set; } = default!;
-
+        public DbSet<Teaghlach.Models.Settings> Settings { get; set; } = default!;
     }
-
-
-
 }

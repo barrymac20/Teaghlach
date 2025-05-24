@@ -1,0 +1,44 @@
+﻿@page "/settings/details"
+@using Microsoft.EntityFrameworkCore
+@using Teaghlach.Models
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Settings</h2>
+    <hr />
+    @if (settings is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+        </dl>
+        <div>
+            <a href="@($"/settings/edit?id={settings.Id}")">Edit</a> |
+            <a href="@($"/settings")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Settings? settings;
+
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        settings = await context.Settings.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (settings is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

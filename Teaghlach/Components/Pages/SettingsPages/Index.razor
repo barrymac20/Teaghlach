@@ -1,0 +1,41 @@
+﻿@page "/settings"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Teaghlach.Models
+@using Teaghlach.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
+
+<PageTitle>Settings</PageTitle>
+
+<h1>Settings</h1>
+
+<MudPaper Class="pa-4 mt-4" Elevation="2">
+	<MudText Typo="Typo.h5">Coming soon...</MudText>
+</MudPaper>
+
+
+
+@* <p> *@
+@* 	<a href="settings/create">Create New</a> *@
+@* </p> *@
+
+@* <QuickGrid Class="table" Items="context.Settings"> *@
+
+@* 	<TemplateColumn Context="settings"> *@
+@* 		<a href="@($"settings/edit?id={settings.Id}")">Edit</a> | *@
+@* 		<a href="@($"settings/details?id={settings.Id}")">Details</a> | *@
+@* 		<a href="@($"settings/delete?id={settings.Id}")">Delete</a> *@
+@* 	</TemplateColumn> *@
+@* </QuickGrid> *@
+
+@code {
+	private TeaghlachContext context = default!;
+
+	protected override void OnInitialized()
+	{
+		context = DbFactory.CreateDbContext();
+	}
+
+	public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

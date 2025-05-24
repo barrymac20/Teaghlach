@@ -1,6 +1,7 @@
 ﻿@page "/familyevents/create"
 @using Microsoft.EntityFrameworkCore
 @using Teaghlach.Models
+@namespace Teaghlach.Pages.FamilyEvents
 @inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
 @inject NavigationManager NavigationManager
 
@@ -157,6 +158,9 @@
 		FamilyMembers = await context.FamilyMembers.ToListAsync();
 		EventCategories = await context.EventCategories.ToListAsync();
 		AllSubCategories = await context.EventSubCategories.ToListAsync();
+
+		Console.WriteLine($"Loaded {EventCategories.Count} categories and {FamilyMembers.Count} members.");
+
 	}
 
 	// ------------------------------
@@ -196,30 +200,40 @@
 	{
 		using var context = DbFactory.CreateDbContext();
 
-		// Combine date and time for start
-		FamilyEvent.Start = FamilyEvent.Start.Date + startTime.Value.ToTimeSpan();
-
-		// Combine date and time for end
-		if (FamilyEvent.End.HasValue)
+		// Check if startTime and endTime have values
+		if (startTime.HasValue && endTime.HasValue)
 		{
-			FamilyEvent.End = FamilyEvent.End.Value.Date + endTime.Value.ToTimeSpan();
+			// Combine date and time for start
+			FamilyEvent.Start = FamilyEvent.Start.Date + startTime.Value.ToTimeSpan();
+
+			// Combine date and time for end
+			if (FamilyEvent.End.HasValue)
+			{
+				FamilyEvent.End = FamilyEvent.End.Value.Date + endTime.Value.ToTimeSpan();
+			}
+			else
+			{
+				// If End is null, default to 1 hour after Start
+				FamilyEvent.End = FamilyEvent.Start.AddHours(1);
+			}
+
+			// If End is before or equal to Start, fix it
+			if (FamilyEvent.End <= FamilyEvent.Start)
+			{
+				FamilyEvent.End = FamilyEvent.Start.AddHours(1);
+			}
 		}
 		else
 		{
-			// If End is null, default to 1 hour after Start
-			FamilyEvent.End = FamilyEvent.Start.AddHours(1);
-		}
-
-		// If End is before or equal to Start, fix it
-		if (FamilyEvent.End <= FamilyEvent.Start)
-		{
-			FamilyEvent.End = FamilyEvent.Start.AddHours(1);
+			Console.WriteLine("Start or End time is missing.");
+			return;
 		}
 
 		context.FamilyEvents.Add(FamilyEvent);
 		await context.SaveChangesAsync();
 
-		NavigationManager.NavigateTo("/calendar"); // Or "/calendar"
+		NavigationManager.NavigateTo("/calendar");
 	}
+
 
 }

@@ -17,43 +17,49 @@
         <p><em>Loading...</em></p>
     }
     else {
-        <dl class="row">
-            <dt class="col-sm-2">Text</dt>
-            <dd class="col-sm-10">@FamilyEvent.Text</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Location</dt>
-            <dd class="col-sm-10">@FamilyEvent.Location</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@FamilyEvent.Description</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Category</dt>
-            <dd class="col-sm-10">@FamilyEvent.EventCategory?.Name</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Sub-Category</dt>
-            <dd class="col-sm-10">@FamilyEvent.EventSubCategory?.Name</dd>
-        </dl>
-       
-        <dl class="row">
-            <dt class="col-sm-2">FamilyMemberId</dt>
-            <dd class="col-sm-10">@FamilyEvent.FamilyMember</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Start</dt>
-            <dd class="col-sm-10">@FamilyEvent.Start</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">End</dt>
-            <dd class="col-sm-10">@FamilyEvent.End</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">AllDay</dt>
-            <dd class="col-sm-10">@FamilyEvent.AllDay</dd>
-        </dl>
+        <table class="table table-bordered w-auto">
+            <tbody>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Title</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.Text</td>
+                </tr>
+
+                <tr>
+                    <td class="fw-bold text-start"><strong>Location</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.Location</td>
+                </tr>
+
+                <tr>
+                    <td class="fw-bold text-start"><strong>Description</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.Description</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Category</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.EventCategory?.Name</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Sub Category</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.EventSubCategory?.Name</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Family Member</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.FamilyMember</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>Start</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.Start</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>End</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.End</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold text-start"><strong>All Day Event</strong></td>
+                    <td class="text-start ps-4">@FamilyEvent.AllDay</td>
+                </tr>
+            </tbody>
+        </table>
+        
         
         <EditForm method="post" Model="FamilyEvent" OnValidSubmit="DeleteFamilyEvent" FormName="delete" Enhance>
             <button type="submit" class="btn btn-danger" disabled="@(FamilyEvent is null)">Delete</button> |

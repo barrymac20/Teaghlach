@@ -18,6 +18,7 @@
             <div class="mb-3">
                 <label for="choreType" class="form-label">Chore Type:</label>
                 <InputSelect id="choreType" class="form-select" @bind-Value="Chore.Type">
+                    <option value="">-- Select Choe Type --</option>
                     @foreach (var type in Enum.GetValues<ChoreType>())
                     {
                         <option value="@type">@type.GetDescription()</option>

@@ -11,7 +11,7 @@ namespace Teaghlach.Tests
         private TeaghlachContext GetInMemoryDbContext()
         {
             var options = new DbContextOptionsBuilder<TeaghlachContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Makes sure the DB is isolated per test
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
                 .Options;
 
             return new TeaghlachContext(options);
@@ -92,8 +92,5 @@ namespace Teaghlach.Tests
             bool isValid = Validator.TryValidateObject(model, context, results, validateAllProperties: true);
             return (isValid, results);
         }
-
-
-
     }
 }

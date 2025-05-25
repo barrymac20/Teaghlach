@@ -12,33 +12,33 @@
 	}
 	else
 	{
-		
-			<MudList Dense="true" T="object">
-				<MudListItem><b>Title:</b> @Event.Text</MudListItem>
-				<MudListItem><b>Location:</b> @Event.Location</MudListItem>
-				<MudListItem><b>Description:</b> @Event.Description</MudListItem>
-				<MudListItem><b>Category:</b> @Event.EventCategory?.Name</MudListItem>
-				<MudListItem><b>Sub-Category:</b> @Event.EventSubCategory?.Name</MudListItem>
-				<MudListItem><b>Family Member:</b> @Event.FamilyMember?.Name</MudListItem>
-				<MudListItem><b>Start:</b> @Event.Start</MudListItem>
-				<MudListItem><b>End:</b> @Event.End</MudListItem>
-				<MudListItem><b>All Day Event:</b> @(Event.AllDay ? "Yes" : "No")</MudListItem>
-			</MudList>
 
-			<MudDivider Class="my-4" />
+		<MudList Dense="true" T="object">
+			<MudListItem><b>Title:</b> @Event.Text</MudListItem>
+			<MudListItem><b>Location:</b> @Event.Location</MudListItem>
+			<MudListItem><b>Description:</b> @Event.Description</MudListItem>
+			<MudListItem><b>Category:</b> @Event.EventCategory?.Name</MudListItem>
+			<MudListItem><b>Sub-Category:</b> @Event.EventSubCategory?.Name</MudListItem>
+			<MudListItem><b>Family Member:</b> @Event.FamilyMember?.Name</MudListItem>
+			<MudListItem><b>Start:</b> @Event.Start</MudListItem>
+			<MudListItem><b>End:</b> @Event.End</MudListItem>
+			<MudListItem><b>All Day Event:</b> @(Event.AllDay ? "Yes" : "No")</MudListItem>
+		</MudList>
 
-			<MudStack Direction="Row" Spacing="2">
-				<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@($"/familyevents/edit?id={Event.Id}")">
-					Edit
-				</MudButton>
-				<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@($"/familyevents/delete?id={Event.Id}")">
-					Delete
-				</MudButton>
-				<MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/calendar">
-					Back to List
-				</MudButton>
-			</MudStack>
-		}
+		<MudDivider Class="my-4" />
+
+		<MudStack Direction="Row" Spacing="2">
+			<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@($"/familyevents/edit?id={Event.Id}")">
+				Edit
+			</MudButton>
+			<MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@($"/familyevents/delete?id={Event.Id}")">
+				Delete
+			</MudButton>
+			<MudButton Variant="Variant.Outlined" Color="Color.Secondary" Href="/calendar">
+				Back to List
+			</MudButton>
+		</MudStack>
+
 	}
 </MudPaper>
 

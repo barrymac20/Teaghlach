@@ -1,6 +1,4 @@
 ﻿@page "/familyevents"
-@using Microsoft.AspNetCore.Components.QuickGrid
-
 @implements IAsyncDisposable
 @inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
 
@@ -23,7 +21,6 @@
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="DateTime" Property="familyevent => familyevent.Start" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="DateTime?" Property="familyevent => familyevent.End" />
     <Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyEvent" TProp="bool" Property="familyevent => familyevent.AllDay" />
-
 
     <Microsoft.AspNetCore.Components.QuickGrid.TemplateColumn Context="familyevent">
         <a href="@($"familyevents/edit?id={familyevent.Id}")">Edit</a> |

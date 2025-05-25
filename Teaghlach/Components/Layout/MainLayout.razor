@@ -5,73 +5,80 @@
 <MudThemeProvider />
 <MudLayout>
 
-	<!-- Top App Bar -->
-
-	<MudAppBar Elevation="1" Color="Color.Default">
+	<!-- Header with app name and current time/weather -->
+	<MudAppBar Elevation="0" Style="background-color: #2d96d8; color: white;">
 		<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
 		<MudText Typo="Typo.h5" Class="ml-3" Color="Color.Inherit" Href="/" Style="text-decoration: none;">
 			Teaghlach
 		</MudText>
 		<MudSpacer />
-		<MudText Class="pr-4">🕒 @CurrentTime @CurrentWeather</MudText> <!-- Placeholder -->
+		<MudText Class="pr-4">🕒 @CurrentTime @CurrentWeather</MudText>
 	</MudAppBar>
 
-	<!-- Left Nav Drawer -->
-
+	<!-- Sidebar navigation for moving between sections of the app -->
 	<MudDrawer @bind-Open="DrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
 		<MudNavMenu>
 
-			<!-- Top Menu Items -->
-			<MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard" ActiveClass="active-link" Class="nav-link">Dashboard</MudNavLink>
+			<!-- Main sections -->
+			<MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" ActiveClass="active-link" Class="nav-link">Home</MudNavLink>
 			<MudNavLink Href="/calendar" Icon="@Icons.Material.Filled.CalendarMonth" ActiveClass="active-link" Class="nav-link">Calendar</MudNavLink>
 			<MudNavLink Href="/chores" Icon="@Icons.Material.Filled.Checklist" ActiveClass="active-link" Class="nav-link">Chores</MudNavLink>
 			<MudNavLink Href="/rewards" Icon="@Icons.Material.Filled.Star" ActiveClass="active-link" Class="nav-link">Rewards</MudNavLink>
 			<MudNavLink Href="/meals" Icon="@Icons.Material.Filled.Restaurant" ActiveClass="active-link" Class="nav-link">Meals</MudNavLink>
 			<MudNavLink Href="/lists" Icon="@Icons.Material.Filled.List" ActiveClass="active-link" Class="nav-link">Lists</MudNavLink>
-			<MudNavLink Href="/familymembers" Icon="@Icons.Material.Filled.FamilyRestroom" ActiveClass="active-link" Class="nav-link">My Family</MudNavLink> 
+			<MudNavLink Href="/familymembers" Icon="@Icons.Material.Filled.FamilyRestroom" ActiveClass="active-link" Class="nav-link">My Family</MudNavLink>
 
 			<MudSpacer />
 
-			<!-- Bottom Settings Option -->
+			<!-- Settings always stays pinned at the bottom -->
 			<MudNavLink Href="/settings" Icon="@Icons.Material.Filled.Settings" ActiveClass="active-link" Class="mud-mt-auto nav-link">Settings</MudNavLink>
 		</MudNavMenu>
 	</MudDrawer>
 
-	<!-- Main Content Area -->
-	<MudMainContent Class="pt-16" Style="background-color: #fafafa;">
+	<!-- Displays whatever page the user is currently on -->
+	<MudMainContent Class="pt-16" Style="@GetMainContentStyle()">
 		@Body
 	</MudMainContent>
 
 </MudLayout>
 
-<style>
-
-</style>
-
 @code {
-    private bool DrawerOpen = true;
-    private string CurrentTime = string.Empty;
-    private string CurrentWeather = "Loading...";
-    private Timer? Timer;
+	private bool DrawerOpen = true;
+	private string CurrentTime = string.Empty;
+	private string CurrentWeather = "Loading...";
+	private Timer? Timer;
 
-    [Inject] private IJSRuntime JS { get; set; } = default!;
+	[Inject] private IJSRuntime JS { get; set; } = default!;
+	[Inject] private NavigationManager Navigation { get; set; } = default!;
 
-    void DrawerToggle()
-    {
-        DrawerOpen = !DrawerOpen;
-    }
+	// Only show the blue background on the home page
+	private string GetMainContentStyle()
+	{
+		return Navigation.Uri.EndsWith("/") || Navigation.Uri.EndsWith("/index")
+			? "background-color: #2d96d8;"
+			: "";
+	}
 
-    protected override void OnInitialized()
-    {
-        
+	// Toggles the sidebar drawer
+	void DrawerToggle()
+	{
+		DrawerOpen = !DrawerOpen;
+	}
+
+	// Start the clock as soon as the app loads
+	protected override void OnInitialized()
+	{
 		Timer = new Timer(UpdateTime, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
-    }
+	}
+
+	// Updates the time shown in the header every minute
 	private void UpdateTime(object? state)
 	{
 		CurrentTime = DateTime.Now.ToString("HH:mm");
 		InvokeAsync(StateHasChanged);
 	}
 
+	// Try to fetch the weather on first render
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
@@ -89,8 +96,9 @@
 		}
 	}
 
-    public void Dispose()
-    {
-        Timer?.Dispose();
-    }
+	// Clean up the timer when the component is destroyed
+	public void Dispose()
+	{
+		Timer?.Dispose();
+	}
 }

@@ -1,6 +1,4 @@
 ﻿@page "/familyevents/create"
-@using Microsoft.EntityFrameworkCore
-@using Teaghlach.Models
 @namespace Teaghlach.Pages.FamilyEvents
 @inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
 @inject NavigationManager NavigationManager
@@ -18,6 +16,11 @@
 			<DataAnnotationsValidator />
 			<ValidationSummary class="text-danger" role="alert" />
 			
+			<div class="mb-3">
+				<label for="text" class="form-label">Title:</label>
+				<InputText id="text" @bind-Value="FamilyEvent.Text" class="form-control" />
+				<ValidationMessage For="() => FamilyEvent.Text" class="text-danger" />
+			</div>
 			<div class="mb-3">
 				<label for="location" class="form-label">Location:</label>
 				<InputText id="location" @bind-Value="FamilyEvent.Location" class="form-control" />
@@ -97,11 +100,7 @@
 				<InputCheckbox id="allday" @bind-Value="FamilyEvent.AllDay" class="form-check-input" />
 				<ValidationMessage For="() => FamilyEvent.AllDay" class="text-danger" />
 			</div>
-			<div class="mb-3">
-				<label for="text" class="form-label">Text:</label>
-				<InputText id="text" @bind-Value="FamilyEvent.Text" class="form-control" />
-				<ValidationMessage For="() => FamilyEvent.Text" class="text-danger" />
-			</div>
+			
 			<button type="submit" class="btn btn-primary">Create</button>
 		</EditForm>
 	</div>

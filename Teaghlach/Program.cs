@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.EntityFrameworkCore;
-using Teaghlach.Data;
-using MudBlazor.Services;
 using Microsoft.AspNetCore.Components.Server;
-using Teaghlach.Components;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
+using Teaghlach.Components;
+using Teaghlach.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +24,6 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-    //.AddInteractiveServerComponents(options => { options.DetailedErrors = true; });
 
 //  Optional: If you're still using AuthenticationStateProvider
 builder.Services.AddCascadingAuthenticationState();

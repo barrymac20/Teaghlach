@@ -1,12 +1,14 @@
 ﻿@page "/familyevents/create"
 @inject IDbContextFactory<Teaghlach.Data.TeaghlachContext> DbFactory
 @inject NavigationManager NavigationManager
+@namespace Teaghlach.Pages.FamilyEvents
+
 
 <PageTitle>Create</PageTitle>
 
 <h1>Create</h1>
 
-<h2>FamilyEvent</h2>
+<h2>Family Event</h2>
 <hr />
 <div class="row">
 	<div class="col-md-4">
@@ -51,7 +53,7 @@
 			<div class="mb-3">
 				<label for="subcategory" class="form-label">Subcategory:</label>
 				<InputSelect id="subcategory" class="form-select" @bind-Value="FamilyEvent.EventSubCategoryId">
-					<option value="">-- Select Subcategory --</option>
+					<option value="">-- Select Sub Category --</option>
 					@foreach (var sub in FilteredSubCategories)
 					{
 						<option value="@sub.Id">@sub.Name</option>

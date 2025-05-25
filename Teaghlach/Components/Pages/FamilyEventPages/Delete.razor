@@ -8,7 +8,7 @@
 
 <p>Are you sure you want to delete this?</p>
 <div>
-    <h2>FamilyEvent</h2>
+    <h2>Family Event</h2>
     <hr />
     @if (FamilyEvent is null)
     {
@@ -41,7 +41,7 @@
                 </tr>
                 <tr>
                     <td class="fw-bold text-start"><strong>Family Member</strong></td>
-                    <td class="text-start ps-4">@FamilyEvent.FamilyMember</td>
+                    <td class="text-start ps-4">@FamilyEvent.FamilyMember?.Name</td>
                 </tr>
                 <tr>
                     <td class="fw-bold text-start"><strong>Start</strong></td>

@@ -16,7 +16,7 @@
             <div class="mb-3">
                 <label for="choreType" class="form-label">Chore Type:</label>
                 <InputSelect id="choreType" class="form-select" @bind-Value="Chore.Type">
-                    <option value="">-- Select Choe Type --</option>
+                    <option value="">-- Select Chore Type --</option>
                     @foreach (var type in Enum.GetValues<ChoreType>())
                     {
                         <option value="@type">@type.GetDescription()</option>
@@ -38,7 +38,7 @@
             <div class="mb-3">
                 <label for="createdat" class="form-label">Created Date:</label>
                 <InputDate id="createdat" @bind-Value="Chore.CreatedAt" class="form-control" />
-                <ValidationMessage For="() => Chore.CreatedAt" class="text-danger" />
+                @* <ValidationMessage For="() => Chore.CreatedAt" class="text-danger" /> *@
             </div>
             <div class="mb-3">
                 <label for="duedate" class="form-label">Due Date:</label>

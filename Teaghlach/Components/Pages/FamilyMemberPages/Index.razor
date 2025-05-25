@@ -4,7 +4,7 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Index</h1>
+<h1>My Family Members</h1>
 
 <p>
 	<a href="familymembers/create">Create New</a>
@@ -14,7 +14,7 @@
 	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.Name" Title="Name"/>
 	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.FamilyRole.Name" Title="Family Role" />
 	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.FamilySubRole.Name" Title="Sub Role" />
-	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="DateTime?" Property="familymember => familymember.DateOfBirth" Title="Date of Birth" />
+	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="DateTime?" Property="familymember => familymember.DateOfBirth" Title="Date of Birth" Format="dd/MM/yyyy" />
 	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.Email" Title="Email Address" />
 	<Microsoft.AspNetCore.Components.QuickGrid.PropertyColumn TGridItem="FamilyMember" TProp="string" Property="familymember => familymember.PhoneNumber" Title="Phone Number" />
 
